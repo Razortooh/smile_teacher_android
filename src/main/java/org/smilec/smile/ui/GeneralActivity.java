@@ -29,10 +29,12 @@ import java.util.Vector;
 import org.smilec.smile.R;
 import org.smilec.smile.bu.BoardManager;
 import org.smilec.smile.bu.Constants;
+import org.smilec.smile.bu.QuestionsManager;
 import org.smilec.smile.bu.SmilePlugServerManager;
 import org.smilec.smile.bu.exception.DataAccessException;
 import org.smilec.smile.domain.Board;
 import org.smilec.smile.domain.CurrentMessageStatus;
+import org.smilec.smile.domain.Student;
 import org.smilec.smile.ui.adapter.PagerAdapter;
 import org.smilec.smile.ui.fragment.AbstractFragment;
 import org.smilec.smile.ui.fragment.QuestionsFragment;
@@ -64,11 +66,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class GeneralActivity extends FragmentActivity {
 
@@ -89,13 +96,16 @@ public class GeneralActivity extends FragmentActivity {
 
     private String ip;
     private String hours, minutes, seconds;
-    private String status;
+    
+    private static String status;
+    public static String getStatus() { return status; }
 
     private Button btSolve, btResults;
 
     private TextView tvTime, tvRemaining;
     private TextView btnStudents, btnQuestions;
     private TextView tvStatus;
+    private Spinner spLimitToSucceed;
 
     private final List<Fragment> fragments = new Vector<Fragment>();
 
@@ -123,7 +133,7 @@ public class GeneralActivity extends FragmentActivity {
         tvTime = (TextView) findViewById(R.id.tv_time);
         tvRemaining = (TextView) findViewById(R.id.tv_remaining_time);
         tvStatus = (TextView) findViewById(R.id.tv_status);
-
+        
         if (savedInstanceState != null) {
             Board tmp = (Board) savedInstanceState.getSerializable(PARAM_BOARD);
 
@@ -190,8 +200,7 @@ public class GeneralActivity extends FragmentActivity {
             case KeyEvent.KEYCODE_BACK:
                 AlertDialog.Builder builderBack = new AlertDialog.Builder(GeneralActivity.this);
                 builderBack
-                    .setMessage(
-                        "Are you sure you want to exit? This operation will reset the game and exit.")
+                    .setMessage("Are you sure you want to exit? This operation will reset the game and exit.")
                     .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
@@ -201,6 +210,8 @@ public class GeneralActivity extends FragmentActivity {
                             } catch (NetworkErrorException e) {
                                 Log.e(Constants.LOG_CATEGORY, "Error: ", e);
                             }
+                            
+                            // QuestionsManager.resetListOfDeletedQuestions(GeneralActivity.this);
                             GeneralActivity.this.finish();
                         }
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -239,7 +250,7 @@ public class GeneralActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        
         btSolve.setOnClickListener(new SolveButtonListener());
         btResults.setOnClickListener(new ResultsButtonListener());
 
@@ -381,16 +392,25 @@ public class GeneralActivity extends FragmentActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+    	
+    	/**
+    	 * TODO Until we implement retake button, we don't display it.
+    	 * Here is the code to implement it.
+    	 * To replace with 'menu.removeItem(R.id.bt_retake);' just below
+    	 * (cf. issue #55)
+    	 * */
+//    	if (btResults.isEnabled()) {
+//    		MenuItem item = menu.findItem(R.id.bt_retake);
+//    		if (item == null) {
+//    			menu.add(0, R.id.bt_retake, Menu.NONE, R.string.retake).setIcon(R.drawable.retake);
+//    		}
+//    	} else {
+//    		menu.removeItem(R.id.bt_retake);
+//    	}
 
-    	if (btResults.isEnabled()) {
-    		MenuItem item = menu.findItem(R.id.bt_retake);
-    		if (item == null) {
-    			menu.add(0, R.id.bt_retake, Menu.NONE, R.string.retake).setIcon(R.drawable.retake);
-    		}
-    	} else {
-    		menu.removeItem(R.id.bt_retake);
-    	}
-
+    	// Temporary
+    	menu.removeItem(R.id.bt_retake);
+    	
     	return super.onPrepareOptionsMenu(menu);
     }
 
@@ -402,15 +422,21 @@ public class GeneralActivity extends FragmentActivity {
                 AlertDialog.Builder builderRestart = new AlertDialog.Builder(this);
                 builderRestart.setMessage(R.string.restart_game).setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
+                        
+                    	@Override
                         public void onClick(DialogInterface dialog, int id) {
-                            try {
+                            
+                    		try {
+                    			//new SmilePlugServerManager().connect(ip, GeneralActivity.this);
                                 new SmilePlugServerManager().resetGame(ip, GeneralActivity.this);
+                                // QuestionsManager.resetListOfDeletedQuestions(GeneralActivity.this);
                                 GeneralActivity.this.finish();
                             } catch (NetworkErrorException e) {
+                            	ActivityUtil.showLongToast(GeneralActivity.this, R.string.toast_down_or_unavailable);
                                 Log.e(Constants.LOG_CATEGORY, "Error: ", e);
                             }
                         }
+                    	
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
@@ -428,7 +454,7 @@ public class GeneralActivity extends FragmentActivity {
                         public void onClick(DialogInterface dialog, int id) {
                             try {
                                 new SmilePlugServerManager().startRetakeQuestions(ip, GeneralActivity.this, board);
-                                ActivityUtil.showLongToast(GeneralActivity.this, "Retaking...");
+                                ActivityUtil.showLongToast(GeneralActivity.this, R.string.toast_retaking);
                             } catch (NetworkErrorException e) {
                                 Log.e(Constants.LOG_CATEGORY, "Error: ", e);
                             }
@@ -466,6 +492,7 @@ public class GeneralActivity extends FragmentActivity {
                                 Log.e(Constants.LOG_CATEGORY, "Error: ", e);
                             }
 
+                            // QuestionsManager.resetListOfDeletedQuestions(GeneralActivity.this);
                             GeneralActivity.this.finish();
                         }
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -546,13 +573,15 @@ public class GeneralActivity extends FragmentActivity {
                 vTotal.setVisibility(View.VISIBLE);
             }
 
-            ActivityUtil.showLongToast(GeneralActivity.this, "Sorting...");
+            ActivityUtil.showLongToast(GeneralActivity.this, R.string.toast_sorting);
         }
     }
 
     private void startSolvingQuestion() {
-        ActivityUtil.showLongToast(GeneralActivity.this, R.string.solving);
+        ActivityUtil.showLongToast(GeneralActivity.this, R.string.toast_solving);
 
+        status = CurrentMessageStatus.START_SOLVE.name();
+        
         btResults.setEnabled(true);
 
         solve = false;
@@ -579,15 +608,40 @@ public class GeneralActivity extends FragmentActivity {
         TextView tvTopTitle = (TextView) GeneralActivity.this.findViewById(R.id.tv_top_scorers);
         tvTopTitle.setVisibility(View.VISIBLE);
 
-        View vSeparatorScore = findViewById(R.id.view_separator_score);
-        vSeparatorScore.setVisibility(View.VISIBLE);
+//        View vSeparatorScore = findViewById(R.id.view_separator_score);
+//        vSeparatorScore.setVisibility(View.VISIBLE);
 
         RelativeLayout rlTopScorersContainer = (RelativeLayout) GeneralActivity.this
             .findViewById(R.id.rl_top_scorers);
         rlTopScorersContainer.setVisibility(View.VISIBLE);
 
-        Button btSendResults = (Button) GeneralActivity.this
-				.findViewById(R.id.bt_send_results);
+        
+        spLimitToSucceed = (Spinner) findViewById(R.id.sp_limit_to_succeed);
+        ArrayAdapter<?> adapterLimit = ArrayAdapter.createFromResource(this, R.array.percent_correct, android.R.layout.simple_spinner_item);
+        adapterLimit.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spLimitToSucceed.setAdapter(adapterLimit);
+        
+        // Initialize the spinner to 70%
+        spLimitToSucceed.setSelection(2);
+        
+        // If the teacher clicks on the spinner to set a different limit to succeed
+        spLimitToSucceed.setOnItemSelectedListener(new OnItemSelectedListener() {
+            
+        	@Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+	            String[] bases = getResources().getStringArray(R.array.percent_correct);
+	            if(activeFragment instanceof StudentsFragment) {
+	            	((StudentsFragment)activeFragment).updatePercentCorrect(Integer.parseInt(bases[position]));
+	            }
+            }
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) { }
+		});
+        
+        // If the teacher clicks on "Send results" button
+        Button btSendResults = (Button) GeneralActivity.this.findViewById(R.id.bt_send_results);
 		btSendResults.setVisibility(View.VISIBLE);
 		btSendResults.setOnClickListener(new OnClickListener() {
 
@@ -595,7 +649,6 @@ public class GeneralActivity extends FragmentActivity {
 			public void onClick(View v) {
 				SendEmailResultsUtil.send(board, ip, GeneralActivity.this);
 			}
-
 		});
     }
 
@@ -634,10 +687,15 @@ public class GeneralActivity extends FragmentActivity {
 
         @Override
         protected String doInBackground(Void... params) {
-            try {
-                new SmilePlugServerManager().startSolvingQuestions(ip, context);
+        	
 
-                return new SmilePlugServerManager().currentMessageGame(ip, context);
+        	SmilePlugServerManager spsm = new SmilePlugServerManager(); 
+        	
+            try {
+            	//spsm.connect(ip, context);
+            	spsm.startSolvingQuestions(ip, context);
+            	//String message = spsm.currentMessageGame(ip, context); 
+                return spsm.currentMessageGame(ip, context); 
             } catch (NetworkErrorException e) {
                 handleException(e);
                 return "";
@@ -692,7 +750,7 @@ public class GeneralActivity extends FragmentActivity {
 
         @Override
         public void onPageSelected(int currentIndex) {
-            activeFragment = (AbstractFragment) fragments.get(currentIndex);
+        	activeFragment = (AbstractFragment) fragments.get(currentIndex);
             updateCurrentFragment(board);
         }
 
@@ -756,15 +814,20 @@ public class GeneralActivity extends FragmentActivity {
         @Override
         protected Board doInBackground(Void... arg0) {
 
+        	Board board = null;
+        	
             try {
-                return loadBoard();
+//            	if(new SmilePlugServerManager().connect(ip, getApplicationContext())) {
+            		board = loadBoard();
+//            	}
             } catch (NetworkErrorException e) {
                 Log.e(Constants.LOG_CATEGORY, e.getMessage());
+                board = GeneralActivity.this.board;
             } catch (DataAccessException e) {
                 Log.e(Constants.LOG_CATEGORY, e.getMessage());
             }
 
-            return null;
+            return board;
         }
 
         @Override

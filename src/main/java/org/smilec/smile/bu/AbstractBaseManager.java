@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.json.JSONException;
-import org.smilec.smile.bu.json.CurrentMessageJSONParser;
 import org.smilec.smile.util.DeviceUtil;
 import org.smilec.smile.util.HttpUtil;
 import org.smilec.smile.util.IOUtil;
@@ -31,33 +30,35 @@ import android.content.Context;
 
 public abstract class AbstractBaseManager {
 
-    protected static void checkServer(String ip) throws NetworkErrorException {
+    /**
+     * @return if the server is available or not
+     */
+    protected static boolean checkServer(String ip) throws NetworkErrorException {
 
         InputStream is = null;
         String url = SmilePlugUtil.createUrl(ip);
+        boolean isAvailable = false;
 
         try {
             is = HttpUtil.executeGet(url);
+            if(is != null) isAvailable = true;
         } catch (NetworkErrorException e) {
-            throw new NetworkErrorException("Connection errror: " + e.getMessage(), e);
+        	
+        	throw new NetworkErrorException("Server unavailable: " + e.getMessage(), e);
         } finally {
             IOUtil.silentClose(is);
         }
+        return isAvailable;
+    }  
 
-        if (is == null) {
-            throw new NetworkErrorException("Server unavailable");
-        }
-
-    }
-
-    protected static void checkConnection(Context context) throws NetworkErrorException {
+    protected static boolean checkConnection(Context context) throws NetworkErrorException {
 
         boolean isConnected = DeviceUtil.isConnected(context);
 
         if (!isConnected) {
             throw new NetworkErrorException("Connection unavailable");
         }
-
+        return isConnected;
     }
 
     protected InputStream get(String ip, Context context, String url) throws NetworkErrorException {
@@ -72,13 +73,26 @@ public abstract class AbstractBaseManager {
 
     }
 
-    protected void post(String ip, Context context, String url, String json)
-            throws NetworkErrorException {
-            connect(ip, context);
-
-          	HttpUtil.executePost(url, json);
-
-        }
+    protected void post(String ip, Context context, String url, String json) throws NetworkErrorException {
+            
+    	connect(ip, context);
+      	HttpUtil.executePost(url, json);
+    }
+    
+    protected InputStream delete(String ip, Context context, String url) throws NetworkErrorException {
+        
+    	connect(ip, context);
+    	
+        try { 
+        	InputStream is = HttpUtil.executeDelete(url);
+        	return is;
+        			 
+    	}
+        catch (UnsupportedEncodingException e) { e.printStackTrace(); }
+        catch (JSONException e) { e.printStackTrace(); }
+        
+		return null;
+    }
 
     protected void put(String ip, Context context, String url, String json)
         throws NetworkErrorException {
@@ -105,9 +119,12 @@ public abstract class AbstractBaseManager {
 
     }
 
-    public void connect(String ip, Context context) throws NetworkErrorException {
-        checkConnection(context);
-        checkServer(ip);
+    public boolean connect(String ip, Context context) throws NetworkErrorException {
+        
+    	if(checkConnection(context) && checkServer(ip)) {
+    		return true;
+    	} else 
+    		return false;
     }
 
 }

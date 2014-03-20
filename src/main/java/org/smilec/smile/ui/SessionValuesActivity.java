@@ -5,6 +5,7 @@ import org.smilec.smile.bu.Constants;
 import org.smilec.smile.bu.NetworkManager;
 import org.smilec.smile.bu.SmilePlugServerManager;
 import org.smilec.smile.util.ActivityUtil;
+import org.smilec.smile.util.CloseClickListenerUtil;
 import org.smilec.smile.util.DialogUtil;
 import org.smilec.smile.util.ui.ProgressDialogAsyncTask;
 
@@ -23,6 +24,8 @@ import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +38,9 @@ public class SessionValuesActivity extends Activity {
 	private TextView tv_sessionTitle;
 	private TextView tv_groupName;
 	private Button btnCreateSession;
+	
+	private Button btnBack;
+	private ImageButton btnImgBack;
 	
 	private Context context;
 	private static final int MSG_OK = 1;
@@ -69,6 +75,12 @@ public class SessionValuesActivity extends Activity {
         tv_sessionTitle = (TextView) findViewById(R.id.session_title);
         tv_groupName = (TextView) findViewById(R.id.group_name);
         btnCreateSession = (Button) findViewById(R.id.btn_create_session);
+        
+        if(findViewById(R.id.bt_back) instanceof ImageButton) {
+        	btnImgBack = (ImageButton) findViewById(R.id.bt_back);
+        } else {
+        	btnBack = (Button) findViewById(R.id.bt_back);
+        }
 
         registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
@@ -87,19 +99,19 @@ public class SessionValuesActivity extends Activity {
 
         btnCreateSession.setEnabled(false);
         btnCreateSession.setOnClickListener(new CreateSessionButtonListener());
+        
+        if(btnImgBack != null) {
+        	btnImgBack.setOnClickListener(new CloseClickListenerUtil(context));
+        } else
+        	btnBack.setOnClickListener(new CloseClickListenerUtil(context));
+        
 
 //        tv_teacherName.addTextChangedListener(new TextChanged());
 //        tv_sessionTitle.addTextChangedListener(new TextChanged());
 //        tv_groupName.addTextChangedListener(new TextChanged());
 
         this.setVisible(true);
-
-//        if ( ) {
-//        	btnCreateSession.setEnabled(true);
-//        } else {
-//        	btnCreateSession.setEnabled(false);
-//        }
-        btnCreateSession.setEnabled(true); ///
+        btnCreateSession.setEnabled(true);
     }
 	
 	private class CreateSessionButtonListener implements OnClickListener {
@@ -114,20 +126,20 @@ public class SessionValuesActivity extends Activity {
         Intent intent = new Intent(this, ChooseActivityFlowDialog.class);
         intent.putExtra(GeneralActivity.PARAM_IP, ip_smileplug);
         intent.putExtra(GeneralActivity.PARAM_STATUS, status);
-        //ActivityUtil.showLongToast(this, R.string.connection_established);
-        //this.setVisible(false);
+        
+//        ActivityUtil.showLongToast(this, R.string.connection_established);
         
         // Display toast through the handler
     	Message msg = null;
-		msg = mHandler.obtainMessage(MSG_OK, getResources().getString(R.string.creating_session));
+		msg = mHandler.obtainMessage(MSG_OK, getResources().getString(R.string.toast_creating_session));
 		mHandler.sendMessage(msg);
 		
-		//Starting ChooseActivityFlowDialog
+		// Starting ChooseActivityFlowDialog
         startActivity(intent);
-        this.finish();
         
-        //Closing LoginActivity
-        this.setVisible(false); 
+        // Closing SessionValuesActivity
+        this.setVisible(false);
+//      this.finish();
     }
     
 	// To manage messages outside onCreate() method
@@ -160,7 +172,7 @@ public class SessionValuesActivity extends Activity {
         	String groupName = tv_groupName.getText().toString();
         	
         	if(teacherName.equals("")) 	teacherName = "Default Teacher";
-        	if(sessionTitle.equals("")) sessionTitle = "Session-";
+        	if(sessionTitle.equals("")) sessionTitle = "Default Session";
         	if(groupName.equals("")) 	groupName = "Default Group";
             
         	try {
@@ -186,9 +198,6 @@ public class SessionValuesActivity extends Activity {
             	SessionValuesActivity.this.loading();
             }
         }
-    }
-	
-	private void checkingSessionValues() {
     }
 
 }

@@ -15,11 +15,9 @@ limitations under the License.
 **/
 package org.smilec.smile.ui.fragment;
 
-import java.io.ObjectInputStream.GetField;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -30,9 +28,8 @@ import org.json.JSONException;
 import org.smilec.smile.R;
 import org.smilec.smile.bu.BoardManager;
 import org.smilec.smile.bu.Constants;
-import org.smilec.smile.bu.QuestionsManager;
+import org.smilec.smile.bu.SmilePlugServerManager;
 import org.smilec.smile.bu.exception.DataAccessException;
-import org.smilec.smile.bu.json.CurrentMessageJSONParser;
 import org.smilec.smile.domain.Board;
 import org.smilec.smile.domain.Question;
 import org.smilec.smile.domain.Results;
@@ -42,7 +39,6 @@ import org.smilec.smile.util.ActivityUtil;
 import org.smilec.smile.util.CloseClickListenerUtil;
 import org.smilec.smile.util.SendEmailAsyncTask;
 
-import android.R.bool;
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.app.Dialog;
@@ -64,7 +60,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class QuestionsFragment extends AbstractFragment {
 
@@ -87,8 +82,8 @@ public class QuestionsFragment extends AbstractFragment {
 
 	private Object mQuestionsMutex = new Object();
 	private TextView tvTopTitle;
-
-    @Override
+	
+	@Override
     protected int getLayout() {
         return R.layout.questions;
     }
@@ -238,24 +233,27 @@ public class QuestionsFragment extends AbstractFragment {
     public void updateFragment(final Board board) {
         List<Question> questionsOld = new ArrayList<Question>();
 
-		//
-		// XXX TODO: Debug this code, there is a bug lurking here
-		//
 		synchronized(mQuestionsMutex) {
 			questionsOld.addAll(mQuestions);
+			
 			mQuestions.clear();
 
 			if (mRun) {
-				Collection<Question> newQuestions = null;
-				newQuestions = board.getQuestions();
-
+				List<Question> newQuestions = null;
+				newQuestions = (List<Question>) board.getQuestions();
+				
+                // Log.d(Constants.LOG_CATEGORY, "newQuestions size = " + newQuestions.size());
+				
 				if (newQuestions != null) {
 					mQuestions.addAll(newQuestions);
 				}
+				
+				
 
 				new UpdateResultsTask(getActivity()).execute();
 
 				if (loadItems) {
+                    Log.d(Constants.LOG_CATEGORY, "loadItems is true");
 					listQuestionsSelected.clear();
 
 					loadSelections();
@@ -268,7 +266,7 @@ public class QuestionsFragment extends AbstractFragment {
 					listQuestions();
 				}
 
-				SortQuestionList();
+				// SortQuestionList();
 			}
 		}
 		adapter.notifyDataSetChanged();
@@ -507,12 +505,13 @@ public class QuestionsFragment extends AbstractFragment {
         protected Boolean doInBackground(Void... arg0) {
 
             try {
-                new QuestionsManager().saveQuestions(context, name.trim(), listQuestions, ip);
+            	// We wrap the set of questions in an IQSet
+                new SmilePlugServerManager().saveQuestionsAsAnIQSet(ip, name.trim(), context, listQuestions);
 
                 return true;
-            } catch (DataAccessException e) {
-                Log.e(Constants.LOG_CATEGORY, e.getMessage());
-            }
+            } catch (NetworkErrorException e) {
+				e.printStackTrace();
+			}
 
             return false;
         }
