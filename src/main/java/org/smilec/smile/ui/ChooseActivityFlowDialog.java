@@ -22,6 +22,7 @@ import org.smilec.smile.bu.SmilePlugServerManager;
 import org.smilec.smile.bu.exception.DataAccessException;
 import org.smilec.smile.domain.Results;
 import org.smilec.smile.util.ActivityUtil;
+import org.smilec.smile.util.CloseClickListenerUtil;
 import org.smilec.smile.util.DialogUtil;
 import org.smilec.smile.util.ui.ProgressDialogAsyncTask;
 
@@ -46,6 +47,7 @@ public class ChooseActivityFlowDialog extends Activity {
 
     private Button btStart;
     private Button btUse;
+    private Button btExit;
 
     private Results results;
 
@@ -59,6 +61,7 @@ public class ChooseActivityFlowDialog extends Activity {
 
         btStart = (Button) findViewById(R.id.bt_start);
         btUse = (Button) findViewById(R.id.bt_use_prerared);
+        btExit = (Button) findViewById(R.id.bt_exit);
 
         status = this.getIntent().getStringExtra(GeneralActivity.PARAM_STATUS);
     }
@@ -85,9 +88,12 @@ public class ChooseActivityFlowDialog extends Activity {
         super.onResume();
 
         ip = this.getIntent().getStringExtra(GeneralActivity.PARAM_IP);
-
+        
         btStart.setOnClickListener(new StartButtonListener());
         btUse.setOnClickListener(new UsePreparedQuestionsButtonListener());
+        
+        // Close activity if "exit" button
+        btExit.setOnClickListener(new CloseClickListenerUtil(this));
 
         if (results == null) {
             new UpdateResultsTask(ip, this).execute();
@@ -98,26 +104,16 @@ public class ChooseActivityFlowDialog extends Activity {
 
         @Override
         public void onClick(View v) {
-            if (status != null) {
-                if (!status.equals("")) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(
-                        ChooseActivityFlowDialog.this);
-                    builder.setMessage(R.string.game_running).setCancelable(false)
-                        .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                new LoadTask(ChooseActivityFlowDialog.this).execute();
-                            }
-                        });
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                } else {
-                    new LoadTask(ChooseActivityFlowDialog.this).execute();
-                }
+        	
+            if (status != null && !status.equals("") && !status.equals("RESET")) {
+            	
+                new LoadTask(ChooseActivityFlowDialog.this).execute();
+                ActivityUtil.showLongToast(ChooseActivityFlowDialog.this, R.string.toast_recovering);
+
             } else {
                 new LoadTask(ChooseActivityFlowDialog.this).execute();
+                ActivityUtil.showLongToast(ChooseActivityFlowDialog.this, R.string.toast_starting);
             }
-            ActivityUtil.showLongToast(ChooseActivityFlowDialog.this, R.string.starting);
         }
     }
 
@@ -125,8 +121,7 @@ public class ChooseActivityFlowDialog extends Activity {
 
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(ChooseActivityFlowDialog.this,
-                UsePreparedQuestionsActivity.class);
+            Intent intent = new Intent(ChooseActivityFlowDialog.this, UsePreparedQuestionsActivity.class);
             intent.putExtra(GeneralActivity.PARAM_IP, ip);
             intent.putExtra(GeneralActivity.PARAM_RESULTS, results);
             intent.putExtra(GeneralActivity.PARAM_STATUS, status);
@@ -175,7 +170,6 @@ public class ChooseActivityFlowDialog extends Activity {
         intent.putExtra(GeneralActivity.PARAM_RESULTS, results);
         intent.putExtra(GeneralActivity.PARAM_STATUS, status);
         startActivity(intent);
-
         this.finish();
     }
 

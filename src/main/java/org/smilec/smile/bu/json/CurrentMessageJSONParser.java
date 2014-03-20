@@ -20,30 +20,32 @@ import java.io.InputStream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.smilec.smile.bu.Constants;
 import org.smilec.smile.bu.exception.DataAccessException;
 import org.smilec.smile.util.IOUtil;
+import org.smilec.smile.util.SendEmailAsyncTask;
+
+import android.text.GetChars;
 
 public class CurrentMessageJSONParser {
-
-    private static final String TYPE = "TYPE";
-    private static final String ENCODING = "UTF-8";
 
     public static final String getStatus(InputStream is) throws DataAccessException {
         String s;
         try {
-            s = IOUtil.loadContent(is, ENCODING);
-
+            s = IOUtil.loadContent(is, Constants.ENCODING);    
+            
             JSONObject json = new JSONObject(s);
 
             String type = "";
             if (!json.toString().equals("{}")) {
-                type = json.getString(TYPE);
-            }
+                type = json.getString(Constants.TYPE);
+            } 
 
             return type;
         } catch (IOException e) {
             throw new DataAccessException(e);
         } catch (JSONException e) {
+        	new SendEmailAsyncTask(e.getMessage(),JSONException.class.getName(),CurrentMessageJSONParser.class.getName()).execute();
             throw new DataAccessException(e);
         }
     }

@@ -18,7 +18,6 @@ package org.smilec.smile.ui.fragment;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -29,7 +28,7 @@ import org.json.JSONException;
 import org.smilec.smile.R;
 import org.smilec.smile.bu.BoardManager;
 import org.smilec.smile.bu.Constants;
-import org.smilec.smile.bu.QuestionsManager;
+import org.smilec.smile.bu.SmilePlugServerManager;
 import org.smilec.smile.bu.exception.DataAccessException;
 import org.smilec.smile.domain.Board;
 import org.smilec.smile.domain.Question;
@@ -37,11 +36,14 @@ import org.smilec.smile.domain.Results;
 import org.smilec.smile.ui.GeneralActivity;
 import org.smilec.smile.ui.adapter.QuestionListAdapter;
 import org.smilec.smile.util.ActivityUtil;
+import org.smilec.smile.util.CloseClickListenerUtil;
+import org.smilec.smile.util.SendEmailAsyncTask;
 
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -55,6 +57,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -66,6 +69,7 @@ public class QuestionsFragment extends AbstractFragment {
     private ArrayAdapter<Question> adapter;
 
     private Button btSave;
+    private Button btWriteReport;
 
     private ListView lvListQuestions;
     private TextView tvServer;
@@ -77,8 +81,9 @@ public class QuestionsFragment extends AbstractFragment {
     private boolean loadItems;
 
 	private Object mQuestionsMutex = new Object();
-
-    @Override
+	private TextView tvTopTitle;
+	
+	@Override
     protected int getLayout() {
         return R.layout.questions;
     }
@@ -88,10 +93,13 @@ public class QuestionsFragment extends AbstractFragment {
 
         super.onActivityCreated(savedInstanceState);
 
+        btWriteReport = (Button) getActivity().findViewById(R.id.bt_write_report);
+        btWriteReport.setEnabled(true);
         btSave = (Button) getActivity().findViewById(R.id.bt_save);
-		btSave.setEnabled(false);
-        lvListQuestions = (ListView) getActivity().findViewById(R.id.lv_questions);
+        btSave.setEnabled(false);
+		lvListQuestions = (ListView) getActivity().findViewById(R.id.lv_questions);
         tvServer = (TextView) getActivity().findViewById(R.id.tv_server);
+        tvTopTitle = (TextView) getActivity().findViewById(R.id.tv_top_scorers);
     }
 
     @Override
@@ -100,6 +108,7 @@ public class QuestionsFragment extends AbstractFragment {
 
         btSave.setEnabled(false);
         btSave.setOnClickListener(new SaveButtonListener());
+        btWriteReport.setOnClickListener(new SendReportButtonListener());
 
         ip = getActivity().getIntent().getStringExtra(GeneralActivity.PARAM_IP);
         results = (Results) getActivity().getIntent().getSerializableExtra(
@@ -133,6 +142,7 @@ public class QuestionsFragment extends AbstractFragment {
                 mQuestions.get(position).setPerCorrect(amount);
 
             } catch (JSONException e) {
+            	new SendEmailAsyncTask(e.getMessage(),JSONException.class.getName(),QuestionsFragment.class.getName()).execute();
                 Log.e(Constants.LOG_CATEGORY, "Error: ", e);
             }
         }
@@ -210,7 +220,7 @@ public class QuestionsFragment extends AbstractFragment {
                     }
                 }
             }
-
+            
             if (!listQuestionsSelected.isEmpty()) {
                 btSave.setEnabled(true);
             } else {
@@ -223,24 +233,27 @@ public class QuestionsFragment extends AbstractFragment {
     public void updateFragment(final Board board) {
         List<Question> questionsOld = new ArrayList<Question>();
 
-		//
-		// XXX TODO: Debug this code, there is a bug lurking here
-		//
 		synchronized(mQuestionsMutex) {
 			questionsOld.addAll(mQuestions);
+			
 			mQuestions.clear();
 
 			if (mRun) {
-				Collection<Question> newQuestions = null;
-				newQuestions = board.getQuestions();
-
+				List<Question> newQuestions = null;
+				newQuestions = (List<Question>) board.getQuestions();
+				
+                // Log.d(Constants.LOG_CATEGORY, "newQuestions size = " + newQuestions.size());
+				
 				if (newQuestions != null) {
 					mQuestions.addAll(newQuestions);
 				}
+				
+				
 
 				new UpdateResultsTask(getActivity()).execute();
 
 				if (loadItems) {
+                    Log.d(Constants.LOG_CATEGORY, "loadItems is true");
 					listQuestionsSelected.clear();
 
 					loadSelections();
@@ -253,15 +266,22 @@ public class QuestionsFragment extends AbstractFragment {
 					listQuestions();
 				}
 
-				Collections.sort(mQuestions, new Comparator<Question>() {
-					@Override
-					public int compare(Question arg0, Question arg1) {
-						return (int) (arg1.getPerCorrect() - arg0.getPerCorrect());
-					}
-				});
+				// SortQuestionList();
 			}
 		}
 		adapter.notifyDataSetChanged();
+	}
+
+	private void SortQuestionList() {
+		Collections.sort(mQuestions, new Comparator<Question>() {
+			@Override
+			public int compare(Question arg0, Question arg1) {
+				if (tvTopTitle.getVisibility() == View.VISIBLE) {
+					return Double.compare(arg1.getRating(), arg0.getRating());
+				}
+				return (int) (arg1.getPerCorrect() - arg0.getPerCorrect());
+			}
+		});
 	}
 
     private class SaveButtonListener implements OnClickListener, TextWatcher {
@@ -311,15 +331,15 @@ public class QuestionsFragment extends AbstractFragment {
         }
 
         public class SaveFileDialogListener implements OnClickListener {
-            private Dialog aboutDialog; // XXX Why is this called aboutDialog???
+            private Dialog saveFileDialog;
 
             public SaveFileDialogListener(Dialog aboutDialog) {
-                this.aboutDialog = aboutDialog;
+                this.saveFileDialog = aboutDialog;
             }
 
             @Override
             public void onClick(View v) {
-                TextView name = (TextView) aboutDialog.findViewById(R.id.et_name_file);
+                TextView name = (TextView) saveFileDialog.findViewById(R.id.et_name_file);
 
 				//
 				// We need to have a name set before we enable the button
@@ -334,11 +354,106 @@ public class QuestionsFragment extends AbstractFragment {
 				//
                 new SaveTask(getActivity(), listQuestionsSelected, ip, name.getText().toString()).execute();
 
-                aboutDialog.dismiss();
+                saveFileDialog.dismiss();
             }
         }
     }
 
+    private class SendReportButtonListener implements OnClickListener, TextWatcher {
+	  	
+    	//TextView _message = null;
+		Button _sendToAdminBtn = null;
+		final StringBuilder body = new StringBuilder();
+		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
+		
+        @Override
+        public void onClick(View v) {
+        	
+			Log.d(Constants.LOG_CATEGORY, "SendReportButtonListener.onClick");
+            FragmentActivity activity = QuestionsFragment.this.getActivity();
+
+            Dialog feedbackDialog = new Dialog(activity, R.style.Dialog);
+            feedbackDialog.setContentView(R.layout.feedback);
+            Display displaySize = ActivityUtil.getDisplaySize(activity);
+            feedbackDialog.getWindow().setLayout(displaySize.getWidth(), displaySize.getHeight());
+            feedbackDialog.show();
+
+            Button sendToAdmin = (Button) feedbackDialog.findViewById(R.id.bt_send_report);
+			TextView message = (TextView) feedbackDialog.findViewById(R.id.et_message);
+			final ImageButton btClose = (ImageButton) feedbackDialog.findViewById(R.id.bt_close);
+			
+			message.addTextChangedListener(this);
+			sendToAdmin.setOnClickListener(new SendReportListener(feedbackDialog));
+			
+            //_message = message;
+			_sendToAdminBtn = sendToAdmin;
+			
+			// Closing the popup if the user click on the cross
+			btClose.setOnClickListener(new CloseClickListenerUtil(feedbackDialog));
+			
+			feedbackDialog.show();
+        }
+		
+		@Override
+		public void onTextChanged (CharSequence s, int start, int before, int count) {
+			Log.d(Constants.LOG_CATEGORY, "SendReportButtonListener.onTextChanged");
+			if (count > 0) {
+				if (_sendToAdminBtn != null) {
+					_sendToAdminBtn.setEnabled(true);
+				}
+			} else {
+				_sendToAdminBtn.setEnabled(false);
+			}
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			Log.d(Constants.LOG_CATEGORY, "SendReportButtonListener.afterTextChanged");
+		}
+
+		@Override
+		public void beforeTextChanged (CharSequence s, int start, int count, int after) {
+			Log.d(Constants.LOG_CATEGORY, "SendReportButtonListener.beforeTextChanged");
+		}
+		
+		public class SendReportListener implements OnClickListener {
+            private Dialog messageDialog;
+
+            public SendReportListener(Dialog aboutDialog) {
+                this.messageDialog = aboutDialog;
+            }
+
+            @Override
+            public void onClick(View v) {
+                TextView message = (TextView) messageDialog.findViewById(R.id.et_message);
+    			
+    			// Getting all the values from node server
+    			String data = GeneralActivity.getContents("http://"+ip+"/smile/all");
+    			data = data.replace("{", "\n{");
+                
+                body.append("Dear Administrator,\n\n\n");
+    			body.append(message.getText().toString()+"\n\n");
+    			body.append("   A SMILE teacher\n\n\n\n\n");
+    			body.append("----- JSON data -----\n\n");
+    			body.append(data+"\n");
+                
+				// We need to have a feedback set before sending it
+                if (message.getText().toString().equals("")) {
+                	message.setText("ERROR: The message is empty. The \"Send\" button should be desactivated!");
+                }
+
+                // We redirect to mail app with these settings
+                emailIntent.setType("plain/text");
+				emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { "reply+i-17909211-432eb6ae1acca189ce0ff1dc90b206bf0a62ae4d-64202@reply.github.com" });
+				emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Re: [smile_teacher_android] Add ability for Teacher App to send a stacktrace on fatal exception via email (#25)");
+				emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body.toString());
+				
+				getActivity().startActivity(emailIntent);
+                messageDialog.dismiss();
+            }
+        }
+    }
+    
     private class UpdateResultsTask extends AsyncTask<Void, Void, Results> {
 
         private Context context;
@@ -390,12 +505,13 @@ public class QuestionsFragment extends AbstractFragment {
         protected Boolean doInBackground(Void... arg0) {
 
             try {
-                new QuestionsManager().saveQuestions(context, name.trim(), listQuestions, ip);
+            	// We wrap the set of questions in an IQSet
+                new SmilePlugServerManager().saveQuestionsAsAnIQSet(ip, name.trim(), context, listQuestions);
 
                 return true;
-            } catch (DataAccessException e) {
-                Log.e(Constants.LOG_CATEGORY, e.getMessage());
-            }
+            } catch (NetworkErrorException e) {
+				e.printStackTrace();
+			}
 
             return false;
         }

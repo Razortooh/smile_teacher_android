@@ -7,3 +7,6 @@
 /smileplug-adm-test/target
 /gen
 /bin
+
+lint.xml
+smiledb-test/

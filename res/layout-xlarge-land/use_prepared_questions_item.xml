@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <org.smilec.smile.ui.widget.checkbox.CheckableRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:marvinlabs="http://schemas.android.com/apk/res/fr.marvinlabs.selectablelisttutorial"
   	android:layout_width="fill_parent"
   	android:layout_height="fill_parent"
     android:background="@color/white"
@@ -21,10 +20,43 @@
 
 		<TextView
 		    android:id="@+id/tv_file_name"
-			android:textSize="18dp"
+			android:textSize="16sp"
+			android:textStyle="bold"
 			android:textColor="@color/black"
 			android:focusable="false"
 			android:layout_gravity="left|center_vertical"/>
+		
+		<TextView
+	        android:textSize="16sp"
+	        android:text="@string/separator"
+	        android:textStyle="bold"
+	        android:layout_gravity="center_vertical"
+	        android:layout_marginLeft="10dip"
+	        android:layout_marginRight="10dip"
+	        android:textColor="@color/red" />
+		
+		<TextView
+		    android:id="@+id/tv_teacher_name"
+		    android:layout_gravity="center_vertical"
+		    android:text="@string/teacher_name_hint"
+		    android:textColor="@color/black"
+		    android:textSize="16sp" />
+		
+		<TextView
+	        android:textSize="16sp"
+	        android:text="@string/separator"
+	        android:textStyle="bold"
+	        android:layout_gravity="center_vertical"
+	        android:layout_marginLeft="10dip"
+	        android:layout_marginRight="10dip"
+	        android:textColor="@color/red" />
+
+	    <TextView
+	        android:id="@+id/tv_group_name"
+	        android:textSize="16sp"
+	        android:text="@string/group_name_hint"
+	        android:layout_gravity="center_vertical"
+	        android:textColor="@color/black" />
 
     </TableRow>
 

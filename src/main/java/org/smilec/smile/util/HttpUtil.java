@@ -26,20 +26,25 @@ import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.smilec.smile.bu.BoardManager;
+import org.smilec.smile.bu.json.CurrentMessageJSONParser;
 
 import android.accounts.NetworkErrorException;
 
 public class HttpUtil {
 
-    private HttpUtil() {
+	private HttpUtil() {
         // Empty
     }
 
@@ -88,6 +93,7 @@ public class HttpUtil {
         } catch (ParseException e) {
             throw new NetworkErrorException(e.getMessage());
         } catch (JSONException e) {
+//        	new SendEmailAsyncTask(e.getMessage(),JSONException.class.getName(),HttpUtil.class.getName()).execute();
             throw new NetworkErrorException(e.getMessage());
         }
     }
@@ -95,14 +101,40 @@ public class HttpUtil {
     public static final InputStream executePut(String url, String json)
         throws NetworkErrorException, UnsupportedEncodingException, JSONException {
         HttpPut put = new HttpPut(url);
-        put.setHeader("Content-Type", "application/json");
-        put.setEntity(new StringEntity(json));
+        put.setHeader("Content-Type", SmilePlugUtil.JSON);
+        put.setEntity(new StringEntity(json, HTTP.UTF_8));
         return executeMethod(put);
     }
+    
+    public static final InputStream executeDelete(String url) throws NetworkErrorException, UnsupportedEncodingException, JSONException {
+            
+    		HttpDelete delete = new HttpDelete(url);
+            delete.setHeader("Content-Type", SmilePlugUtil.JSON);
+            return executeMethod(delete);
+        }
 
     public static final InputStream executeGet(String url) throws NetworkErrorException {
         HttpGet get = new HttpGet(url);
         return executeMethod(get);
+    }
+
+    // This method seems to be never used in smile_teacher_android
+    public static final HttpResponse executePost(String url, String json) throws NetworkErrorException {
+
+		try {
+			HttpPost httpPost = new HttpPost(url);
+			httpPost.setEntity(new StringEntity(json, HTTP.UTF_8));
+			httpPost.setHeader("Accept", SmilePlugUtil.FORM);
+			httpPost.setHeader("Content-type", SmilePlugUtil.FORM);
+			return new DefaultHttpClient().execute(httpPost);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
     }
 
 }

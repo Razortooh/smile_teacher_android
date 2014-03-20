@@ -15,21 +15,32 @@ limitations under the License.
 **/
 package org.smilec.smile.ui;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Vector;
 
 import org.smilec.smile.R;
 import org.smilec.smile.bu.BoardManager;
 import org.smilec.smile.bu.Constants;
+import org.smilec.smile.bu.QuestionsManager;
 import org.smilec.smile.bu.SmilePlugServerManager;
 import org.smilec.smile.bu.exception.DataAccessException;
 import org.smilec.smile.domain.Board;
 import org.smilec.smile.domain.CurrentMessageStatus;
+import org.smilec.smile.domain.Student;
 import org.smilec.smile.ui.adapter.PagerAdapter;
 import org.smilec.smile.ui.fragment.AbstractFragment;
 import org.smilec.smile.ui.fragment.QuestionsFragment;
 import org.smilec.smile.ui.fragment.StudentsFragment;
 import org.smilec.smile.util.ActivityUtil;
+import org.smilec.smile.util.SendEmailResultsUtil;
 import org.smilec.smile.util.ui.ProgressDialogAsyncTask;
 
 import android.accounts.NetworkErrorException;
@@ -38,7 +49,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -57,8 +67,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -81,7 +91,9 @@ public class GeneralActivity extends FragmentActivity {
 
     private String ip;
     private String hours, minutes, seconds;
-    private String status;
+    
+    private static String status;
+    public static String getStatus() { return status; }
 
     private Button btSolve, btResults;
 
@@ -193,6 +205,8 @@ public class GeneralActivity extends FragmentActivity {
                             } catch (NetworkErrorException e) {
                                 Log.e(Constants.LOG_CATEGORY, "Error: ", e);
                             }
+                            
+                            // QuestionsManager.resetListOfDeletedQuestions(GeneralActivity.this);
                             GeneralActivity.this.finish();
                         }
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -281,6 +295,51 @@ public class GeneralActivity extends FragmentActivity {
         output = hoursD + " : " + minutesD + " : " + secondsD;
         return output;
     }
+    
+    /**
+	 * Used for JSON data from node server.
+	 * @return the content of the <b>url</b> as a string.
+	 */
+	public static String getContents(String url) {
+	        String contents ="";
+	 
+	  try {
+	        URLConnection conn = new URL(url).openConnection();
+	 
+	        InputStream in = conn.getInputStream();
+	        contents = convertStreamToString(in);
+	   } catch (MalformedURLException e) {
+	        Log.v("MALFORMED URL EXCEPTION", e.toString());
+	   } catch (IOException e) {
+	        Log.e(e.getMessage(), e.toString());
+	   }
+	  return contents;
+	}
+	 
+	/**
+	 * Convert the <b>inputStream</b> into a <b>String</b><br>
+	 * Used by getContents()
+	 */
+	private static String convertStreamToString(InputStream is) throws UnsupportedEncodingException {
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+		StringBuilder sb = new StringBuilder();
+	    String line = null;
+	    try {
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+	   } catch (IOException e) {
+	        e.printStackTrace();
+	   } finally {
+	        try {
+	        	is.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return sb.toString();
+	  }
 
     private void countDownTimer() {
 		Log.d(Constants.LOG_CATEGORY, "Init countDownTimer()");
@@ -327,17 +386,71 @@ public class GeneralActivity extends FragmentActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	
+    	/**
+    	 * TODO Until we implement retake button, we don't display it.
+    	 * Here is the code to implement it.
+    	 * To replace with 'menu.removeItem(R.id.bt_retake);' just below
+    	 * (cf. issue #55)
+    	 * */
+//    	if (btResults.isEnabled()) {
+//    		MenuItem item = menu.findItem(R.id.bt_retake);
+//    		if (item == null) {
+//    			menu.add(0, R.id.bt_retake, Menu.NONE, R.string.retake).setIcon(R.drawable.retake);
+//    		}
+//    	} else {
+//    		menu.removeItem(R.id.bt_retake);
+//    	}
+
+    	// Temporary
+    	menu.removeItem(R.id.bt_retake);
+    	
+    	return super.onPrepareOptionsMenu(menu);
+    }
+
+    @SuppressWarnings("deprecation")
+	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.bt_restart:
                 AlertDialog.Builder builderRestart = new AlertDialog.Builder(this);
                 builderRestart.setMessage(R.string.restart_game).setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        
+                    	@Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            
+                    		try {
+                    			//new SmilePlugServerManager().connect(ip, GeneralActivity.this);
+                    			
+                                new SmilePlugServerManager().resetGame(ip, GeneralActivity.this);
+                                // QuestionsManager.resetListOfDeletedQuestions(GeneralActivity.this);
+                                GeneralActivity.this.finish();
+                            } catch (NetworkErrorException e) {
+                            	ActivityUtil.showLongToast(GeneralActivity.this, R.string.toast_down_or_unavailable);
+                                Log.e(Constants.LOG_CATEGORY, "Error: ", e);
+                            }
+                        }
+                    	
+                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+                AlertDialog alertRestart = builderRestart.create();
+                alertRestart.show();
+                break;
+            case R.id.bt_retake:
+                AlertDialog.Builder builderRetake = new AlertDialog.Builder(this);
+                builderRetake.setMessage(R.string.retake_game).setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
                             try {
-                                new SmilePlugServerManager().resetGame(ip, GeneralActivity.this);
-                                GeneralActivity.this.finish();
+                                new SmilePlugServerManager().startRetakeQuestions(ip, GeneralActivity.this, board);
+                                ActivityUtil.showLongToast(GeneralActivity.this, R.string.toast_retaking);
                             } catch (NetworkErrorException e) {
                                 Log.e(Constants.LOG_CATEGORY, "Error: ", e);
                             }
@@ -348,8 +461,8 @@ public class GeneralActivity extends FragmentActivity {
                             dialog.cancel();
                         }
                     });
-                AlertDialog alertRestart = builderRestart.create();
-                alertRestart.show();
+                AlertDialog alertRetake = builderRetake.create();
+                alertRetake.show();
                 break;
             case R.id.bt_about:
                 Dialog aboutDialog = new Dialog(this, R.style.Dialog);
@@ -375,6 +488,7 @@ public class GeneralActivity extends FragmentActivity {
                                 Log.e(Constants.LOG_CATEGORY, "Error: ", e);
                             }
 
+                            // QuestionsManager.resetListOfDeletedQuestions(GeneralActivity.this);
                             GeneralActivity.this.finish();
                         }
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -425,9 +539,6 @@ public class GeneralActivity extends FragmentActivity {
             } else {
                 btResults.setText(R.string.show_results);
 
-                TableLayout.LayoutParams layoutParams = new TableLayout.LayoutParams(
-                    LayoutParams.WRAP_CONTENT, 275);
-
                 ListView lvListStudents = (ListView) GeneralActivity.this
                     .findViewById(R.id.lv_students);
 
@@ -437,9 +548,16 @@ public class GeneralActivity extends FragmentActivity {
                     .findViewById(R.id.tv_top_scorers);
                 tvTopTitle.setVisibility(View.INVISIBLE);
 
-                LinearLayout llTopScorersContainer = (LinearLayout) GeneralActivity.this
-                    .findViewById(R.id.ll_top_scorers);
-                llTopScorersContainer.setVisibility(View.INVISIBLE);
+                View vSeparatorScore = findViewById(R.id.view_separator_score);
+                vSeparatorScore.setVisibility(View.INVISIBLE);
+
+                RelativeLayout rlTopScorersContainer = (RelativeLayout) GeneralActivity.this
+                    .findViewById(R.id.rl_top_scorers);
+                rlTopScorersContainer.setVisibility(View.INVISIBLE);
+
+				Button btSendResults = (Button) GeneralActivity.this
+						.findViewById(R.id.bt_send_results);
+				btSendResults.setVisibility(View.INVISIBLE);
 
                 TableLayout tlTotal = (TableLayout) findViewById(R.id.tl_total);
                 tlTotal.setVisibility(View.VISIBLE);
@@ -450,12 +568,16 @@ public class GeneralActivity extends FragmentActivity {
                 View vTotal = findViewById(R.id.view_separator_total);
                 vTotal.setVisibility(View.VISIBLE);
             }
+
+            ActivityUtil.showLongToast(GeneralActivity.this, R.string.toast_sorting);
         }
     }
 
     private void startSolvingQuestion() {
-        ActivityUtil.showLongToast(GeneralActivity.this, R.string.solving);
+        ActivityUtil.showLongToast(GeneralActivity.this, R.string.toast_solving);
 
+        status = CurrentMessageStatus.START_SOLVE.name();
+        
         btResults.setEnabled(true);
 
         solve = false;
@@ -480,12 +602,25 @@ public class GeneralActivity extends FragmentActivity {
         lvListStudents.setPadding(5, 0, 0, 0);
 
         TextView tvTopTitle = (TextView) GeneralActivity.this.findViewById(R.id.tv_top_scorers);
-        tvTopTitle.setTextColor(Color.BLACK);
         tvTopTitle.setVisibility(View.VISIBLE);
 
-        LinearLayout llTopScorersContainer = (LinearLayout) GeneralActivity.this
-            .findViewById(R.id.ll_top_scorers);
-        llTopScorersContainer.setVisibility(View.VISIBLE);
+        View vSeparatorScore = findViewById(R.id.view_separator_score);
+        vSeparatorScore.setVisibility(View.VISIBLE);
+
+        RelativeLayout rlTopScorersContainer = (RelativeLayout) GeneralActivity.this
+            .findViewById(R.id.rl_top_scorers);
+        rlTopScorersContainer.setVisibility(View.VISIBLE);
+
+        Button btSendResults = (Button) GeneralActivity.this.findViewById(R.id.bt_send_results);
+		btSendResults.setVisibility(View.VISIBLE);
+		btSendResults.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				SendEmailResultsUtil.send(board, ip, GeneralActivity.this);
+			}
+
+		});
     }
 
     private class LoadStatusTask extends ProgressDialogAsyncTask<Void, String> {
