@@ -251,6 +251,12 @@ public class GeneralActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         
+        // If we retake, we "reload" the status to START_MAKE phase 
+        if(status.equals(CurrentMessageStatus.RE_TAKE.name())) {
+        	
+        	status = CurrentMessageStatus.START_MAKE.name();
+        }
+        
         btSolve.setOnClickListener(new SolveButtonListener());
         btResults.setOnClickListener(new ResultsButtonListener());
 
@@ -394,29 +400,23 @@ public class GeneralActivity extends FragmentActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
     	
     	/**
-    	 * TODO Until we implement retake button, we don't display it.
-    	 * Here is the code to implement it.
-    	 * To replace with 'menu.removeItem(R.id.bt_retake);' just below
-    	 * (cf. issue #55)
+    	 * TODO retake scenario (cf. issue #55)
     	 * */
-//    	if (btResults.isEnabled()) {
-//    		MenuItem item = menu.findItem(R.id.bt_retake);
-//    		if (item == null) {
-//    			menu.add(0, R.id.bt_retake, Menu.NONE, R.string.retake).setIcon(R.drawable.retake);
-//    		}
-//    	} else {
-//    		menu.removeItem(R.id.bt_retake);
-//    	}
-
-    	// Temporary
-    	menu.removeItem(R.id.bt_retake);
+    	if (btResults.isEnabled()) {
+    		MenuItem item = menu.findItem(R.id.bt_retake);
+    		if (item == null) {
+    			menu.add(0, R.id.bt_retake, Menu.NONE, R.string.retake).setIcon(R.drawable.retake);
+    		}
+    	} else {
+    		menu.removeItem(R.id.bt_retake);
+    	}
     	
     	return super.onPrepareOptionsMenu(menu);
     }
 
     @SuppressWarnings("deprecation")
 	@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {	
         switch (item.getItemId()) {
             case R.id.bt_restart:
                 AlertDialog.Builder builderRestart = new AlertDialog.Builder(this);
@@ -455,6 +455,13 @@ public class GeneralActivity extends FragmentActivity {
                             try {
                                 new SmilePlugServerManager().startRetakeQuestions(ip, GeneralActivity.this, board);
                                 ActivityUtil.showLongToast(GeneralActivity.this, R.string.toast_retaking);
+                                
+                                Intent intent = new Intent(GeneralActivity.this, org.smilec.smile.ui.UsePreparedQuestionsActivity.class);
+                                intent.putExtra(GeneralActivity.PARAM_IP, ip);
+                                status = CurrentMessageStatus.RE_TAKE.name();
+                                intent.putExtra(GeneralActivity.PARAM_STATUS, status);                         
+                                startActivity(intent);
+                                
                             } catch (NetworkErrorException e) {
                                 Log.e(Constants.LOG_CATEGORY, "Error: ", e);
                             }
