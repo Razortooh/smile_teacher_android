@@ -255,6 +255,8 @@ public class GeneralActivity extends FragmentActivity {
         if(status.equals(CurrentMessageStatus.RE_TAKE.name())) {
         	
         	status = CurrentMessageStatus.START_MAKE.name();
+        	btSolve.setEnabled(true);
+        	btResults.setEnabled(false);
         }
         
         btSolve.setOnClickListener(new SolveButtonListener());

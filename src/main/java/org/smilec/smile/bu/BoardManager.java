@@ -47,7 +47,7 @@ import android.content.Context;
 public class BoardManager extends AbstractBaseManager {
 
     private static enum Type {
-        HAIL, QUESTION, QUESTION_PIC, ANSWER
+        HAIL, QUESTION, QUESTION_PIC, ANSWER, RE_TAKE
     }
 
     public Board getBoard(String ip, Context context) throws DataAccessException, NetworkErrorException {
@@ -141,6 +141,9 @@ public class BoardManager extends AbstractBaseManager {
                     case ANSWER:
                         jsonArrayAnswersAndRatings.add(object);
                         break;
+                    case RE_TAKE:
+                    	jsonArrayAnswersAndRatings = new ArrayList<JSONObject>();
+                    	break;
                 }
             } else {
                 // TODO Error
