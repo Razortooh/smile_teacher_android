@@ -286,9 +286,7 @@ public class SmilePlugServerManager extends AbstractBaseManager {
         } finally {
             IOUtil.silentClose(is);
         }
-
         return null;
-
     }
 
     public void startSolvingQuestions(String ip, Context context) throws NetworkErrorException {
@@ -310,7 +308,7 @@ public class SmilePlugServerManager extends AbstractBaseManager {
 				Question question = (Question) iterator.next();
 				answersList.add(question.getAnswer());
 			}
-			JSONArray answers = new JSONArray(answersList);		    
+			JSONArray answers = new JSONArray(answersList);
 			
 			post(ip, context, url, "{TYPE:'RE_TAKE',RANSWER:"+answers.toString()+",TIME_LIMIT:'"+10+"',NUMQ:'"+questionsNumber+"'}");
 			
