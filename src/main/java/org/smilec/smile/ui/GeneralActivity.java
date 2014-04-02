@@ -256,6 +256,7 @@ public class GeneralActivity extends FragmentActivity {
         	
         	status = CurrentMessageStatus.START_MAKE.name();
         	btSolve.setEnabled(true);
+        	btResults.setText(R.string.show_results);
         	btResults.setEnabled(false);
         }
         
