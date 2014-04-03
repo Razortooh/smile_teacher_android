@@ -27,6 +27,7 @@
 	        android:id="@+id/iv_details"
 	        android:src="@drawable/details"
 	        android:gravity="center|center_horizontal"
+	        android:contentDescription="@string/details"
 	        android:background="@color/gray"
 	        android:layout_marginBottom="3dip"
 	        android:layout_marginTop="3dip"/>

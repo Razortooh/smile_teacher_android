@@ -256,7 +256,14 @@ public class GeneralActivity extends FragmentActivity {
         	
         	status = CurrentMessageStatus.START_MAKE.name();
         	btSolve.setEnabled(true);
+        	btResults.setText(R.string.show_results);
         	btResults.setEnabled(false);
+        	
+        	TextView tvTopScoreTitle = (TextView) GeneralActivity.this.findViewById(R.id.tv_top_scorers);
+        	tvTopScoreTitle.setVisibility(View.INVISIBLE);
+                
+        	RelativeLayout topScorePanel = (RelativeLayout) GeneralActivity.this.findViewById(R.id.rl_top_scorers);
+        	topScorePanel.setVisibility(View.INVISIBLE);
         }
         
         btSolve.setOnClickListener(new SolveButtonListener());
