@@ -165,6 +165,27 @@ public class SmilePlugServerManager extends AbstractBaseManager {
     }
     
     /**
+     * Ask to the server if a session is already running
+     */
+    public boolean isAlreadyRunningSession(String ip) throws NetworkErrorException {
+    	
+    	boolean bool = false;
+    	String url = SmilePlugUtil.createUrl(ip, SmilePlugUtil.ALL_DATA_URL);
+    	InputStream is = HttpUtil.executeGet(url);
+    	
+    	try {
+    		String smileAll = IOUtil.loadContent(is, "UTF-8");
+    		bool = smileAll.contains("SessionID");
+		} catch (IOException e) { 
+			e.printStackTrace();
+		} finally { 
+			IOUtil.silentClose(is);
+        }
+    			
+    	return bool;
+    }
+    
+    /**
      * Send the session metadata (teacher name, session name, and group name) to smileplug server
      */
     public void createSession(String ip, String teacherName, String sessionTitle, String groupName, Context context) throws NetworkErrorException {

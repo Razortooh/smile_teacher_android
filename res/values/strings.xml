@@ -15,7 +15,7 @@
 	
 	<!-- 	Toasts -->
 	<string name="toast_connection_established">Connection established</string>
-	<string name="toast_creating_session">Creating session…</string>
+	<string name="toast_creating_session">Preparing session…</string>
 	<string name="toast_starting">Starting…</string>
 	<string name="toast_solving">Solving…</string>
 	<string name="toast_sorting">Sorting…</string>
@@ -42,6 +42,7 @@
 	<string name="no_picture">No picture</string>
 	
 	<string name="start_making">Start Making Questions</string>
+	<string name="recovering_session">Recovering Session</string>
 	<string name="use_prepared">Use Prepared Questions</string>
 	<string name="start_solving">Start Solving \n Questions</string>
 	<string name="show_results">Finish:\nShow Results</string>

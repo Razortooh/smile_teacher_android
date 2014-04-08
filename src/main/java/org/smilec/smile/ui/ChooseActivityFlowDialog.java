@@ -50,7 +50,9 @@ public class ChooseActivityFlowDialog extends Activity {
     private Button btExit;
 
     private Results results;
-
+    
+    private boolean alreadyRunning;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +66,13 @@ public class ChooseActivityFlowDialog extends Activity {
         btExit = (Button) findViewById(R.id.bt_exit);
 
         status = this.getIntent().getStringExtra(GeneralActivity.PARAM_STATUS);
+        ip = this.getIntent().getStringExtra(GeneralActivity.PARAM_IP);
+        
+        try {
+			alreadyRunning = new SmilePlugServerManager().isAlreadyRunningSession(ip);
+		} catch (NetworkErrorException e) {
+			e.printStackTrace();
+		}
     }
 
     @Override
@@ -87,7 +96,18 @@ public class ChooseActivityFlowDialog extends Activity {
     protected void onResume() {
         super.onResume();
 
-        ip = this.getIntent().getStringExtra(GeneralActivity.PARAM_IP);
+        // If recovering...
+        if(alreadyRunning) {
+        	btUse.setEnabled(false);
+        	btUse.setBackgroundResource(R.drawable.button_grey);
+        	btStart.setBackgroundResource(R.drawable.button_orange);
+        	btStart.setText(R.string.recovering_session);
+        } else {
+        	btUse.setEnabled(true);
+        	btUse.setBackgroundResource(R.drawable.button_blue);
+        	btStart.setBackgroundResource(R.drawable.button_blue);
+        	btStart.setText(R.string.start_making);
+        }
         
         btStart.setOnClickListener(new StartButtonListener());
         btUse.setOnClickListener(new UsePreparedQuestionsButtonListener());
