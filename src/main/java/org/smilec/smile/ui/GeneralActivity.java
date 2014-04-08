@@ -169,14 +169,20 @@ public class GeneralActivity extends FragmentActivity {
         btResults.setEnabled(false);
         solve = true;
 
-        if (status != null) {
-            if (status.equals("") || !status.equals(CurrentMessageStatus.START_MAKE.name())) {
-                status = CurrentMessageStatus.START_MAKE.name();
-            }
-            tvStatus.setText(GAME_STATUS + CurrentMessageStatus.valueOf(status).getStatus());
-        } else {
-            new LoadStatusTask(this).execute();
+        if(status == null || status.equals("")) {
+        	status = CurrentMessageStatus.START_MAKE.name();
         }
+        
+        // TODO This code seems useless. Lets comment it to see what will happen
+        
+//        if (status != null) {
+//            if (!status.equals(CurrentMessageStatus.START_MAKE.name())) {
+//                status = CurrentMessageStatus.START_MAKE.name();
+//            }
+//            tvStatus.setText(GAME_STATUS + CurrentMessageStatus.valueOf(status).getStatus());
+//        } else {
+//            new LoadStatusTask(this).execute();
+//        }
 
     }
 
