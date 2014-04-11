@@ -414,9 +414,7 @@ public class GeneralActivity extends FragmentActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
     	
-    	/**
-    	 * TODO retake scenario (cf. issue #55)
-    	 * */
+    	// Adding Retake button to menu
     	if (btResults.isEnabled()) {
     		MenuItem item = menu.findItem(R.id.bt_retake);
     		if (item == null) {

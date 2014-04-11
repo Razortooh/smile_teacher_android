@@ -100,7 +100,7 @@ public class UsePreparedQuestionsActivity extends ListActivity {
         ip = this.getIntent().getStringExtra(GeneralActivity.PARAM_IP);
         results = (Results) this.getIntent().getSerializableExtra(GeneralActivity.PARAM_RESULTS);
         status = this.getIntent().getStringExtra(GeneralActivity.PARAM_STATUS);
-
+        
         btOk = (Button) findViewById(R.id.bt_ok);
         cbQuestions = (CheckBox) findViewById(R.id.cb_questions);
         spinnerHours = (Spinner) findViewById(R.id.sp_hours);
@@ -108,6 +108,11 @@ public class UsePreparedQuestionsActivity extends ListActivity {
         spinnerSeconds = (Spinner) findViewById(R.id.sp_seconds);
         btClose = (ImageButton) findViewById(R.id.bt_close);
 
+        // If retaking, we remove the cross
+        if(status.equals(CurrentMessageStatus.RE_TAKE.name())) {
+        	btClose.setVisibility(View.INVISIBLE);
+        }
+        
         lvListQuestions = getListView();
     }
 
