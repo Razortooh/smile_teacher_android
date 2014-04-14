@@ -75,7 +75,7 @@ public class LoginActivity extends Activity {
             PackageInfo pinfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
             TextView title = (TextView) findViewById(R.id.tv_title);
             // title.setText(getText(R.string.app_name));
-            title.setText(getText(R.string.app_name) + " " + pinfo.versionName);
+            title.setText("v. " + pinfo.versionName);
         } catch (NameNotFoundException e) {
             Log.e(Constants.LOG_CATEGORY, "Error: ", e);
         }
