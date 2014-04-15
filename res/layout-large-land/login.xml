@@ -46,18 +46,6 @@
 		android:layout_toRightOf="@+id/separator"
 		android:layout_below="@+id/logo_smile_teacher"
 		android:textSize="16sp" />
-        
-    
-
-<!-- 	 <View -->
-<!-- 		android:id="@+id/view_separator" -->
-<!-- 		android:layout_width="fill_parent" -->
-<!-- 		android:layout_height="1dip" -->
-<!-- 		android:background="@color/gray" -->
-<!-- 		android:layout_marginLeft="5dip" -->
-<!-- 		android:layout_marginRight="5dip" -->
-<!-- 		android:layout_marginBottom="20dip" -->
-<!-- 		android:layout_below="@+id/tv_title" /> -->
 	
 	<View
 		android:id="@+id/separator"
