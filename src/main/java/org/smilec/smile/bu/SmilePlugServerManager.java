@@ -49,6 +49,26 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 public class SmilePlugServerManager extends AbstractBaseManager {
+	
+	/**
+     * Return <ip_server>/smile/all
+     */
+    public String getSmileAll(String ip) {
+    	
+    	
+    	String smileAll = new String();
+    	String url = SmilePlugUtil.createUrl(ip, SmilePlugUtil.ALL_DATA_URL);
+    	InputStream is = null;
+		
+    	try { is = HttpUtil.executeGet(url); } 
+		catch (NetworkErrorException e1) { e1.printStackTrace(); }
+    	
+    	try { smileAll = IOUtil.loadContent(is, "UTF-8"); } 
+    	catch (IOException e) { e.printStackTrace(); } 
+    	finally { IOUtil.silentClose(is); }
+    			
+    	return smileAll;
+    }
 
     public void startMakingQuestions(String ip, Context context) throws NetworkErrorException {
         
