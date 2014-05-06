@@ -182,23 +182,33 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private void loading() {
-        Intent intent = new Intent(this, SessionValuesActivity.class);
-        intent.putExtra(GeneralActivity.PARAM_IP, tvIp.getText().toString());
-        intent.putExtra(GeneralActivity.PARAM_STATUS, status);
-        //ActivityUtil.showLongToast(this, R.string.connection_established);
-        //this.setVisible(false);
-        
-        // Display toast through the handler
+    private void synchonizing() {
+    	
+    	String all = new SmilePlugServerManager().getSmileAll(tvIp.getText().toString());
+    	
+    	Intent intent = null;
+    	
+    	// Display toast through the handler
     	Message msg = null;
-		msg = mHandler.obtainMessage(MSG_OK, getResources().getString(R.string.toast_connection_established));
+    	msg = mHandler.obtainMessage(MSG_OK, getResources().getString(R.string.toast_connection_established));
 		mHandler.sendMessage(msg);
-		
-		//Starting SessionValuesActivity
-        startActivity(intent);
 
-        //Closing LoginActivity
-//        this.setVisible(false); 
+    	if(!all.contains("SESSION_VALUES")) {		
+    		intent = new Intent(this, SessionValuesActivity.class);
+    	} 
+    	else if(!all.contains("START_MAKE") && !all.contains("SessionID")) {
+    		intent = new Intent(this, ChooseActivityFlowDialog.class);
+    	} 
+    	else {
+    		intent = new Intent(this, GeneralActivity.class);
+            //intent.putExtra(GeneralActivity.PARAM_RESULTS, results);            
+    	}
+    	intent.putExtra(GeneralActivity.PARAM_IP, tvIp.getText().toString());
+        intent.putExtra(GeneralActivity.PARAM_STATUS, status);
+    	startActivity(intent);
+        // Closing LoginActivity
+        /* this.setVisible(false);
+    	  this.finish(); */
     }
     
 	// To manage messages outside onCreate() method
@@ -244,7 +254,7 @@ public class LoginActivity extends Activity {
             if (!message.equals("")) {
                 DialogUtil.checkConnection(LoginActivity.this, message);
             } else {
-                LoginActivity.this.loading();
+                LoginActivity.this.synchonizing();
             }
         }
     }

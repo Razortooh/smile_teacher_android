@@ -125,13 +125,11 @@ public class ChooseActivityFlowDialog extends Activity {
         @Override
         public void onClick(View v) {
         	
+        	new LoadTask(ChooseActivityFlowDialog.this).execute();
+        	
             if (status != null && !status.equals("") && !status.equals("RESET")) {
-            	
-                new LoadTask(ChooseActivityFlowDialog.this).execute();
                 ActivityUtil.showLongToast(ChooseActivityFlowDialog.this, R.string.toast_recovering);
-
             } else {
-                new LoadTask(ChooseActivityFlowDialog.this).execute();
                 ActivityUtil.showLongToast(ChooseActivityFlowDialog.this, R.string.toast_starting);
             }
         }
