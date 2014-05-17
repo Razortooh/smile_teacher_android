@@ -57,8 +57,6 @@
 
         <TableRow
             android:id="@+id/tr_row"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
             android:layout_marginTop="1dip"
             android:layout_marginLeft="10dip">
 
@@ -68,7 +66,7 @@
                 android:textSize="10sp"
                 android:background="@drawable/box_grey"
                 android:textColor="@color/black"
-                android:layout_gravity="center|center_horizontal" />
+                android:gravity="center" />
 
             <TextView
                 android:id="@+id/tv_ip"
@@ -76,7 +74,7 @@
                 android:textSize="10sp"
                 android:background="@drawable/box_grey"
                 android:textColor="@color/black"
-                android:layout_gravity="center|center_horizontal" />
+                android:gravity="center" />
 
             <TextView
                 android:id="@+id/tv_question"
@@ -84,7 +82,7 @@
                 android:textSize="10sp"
                 android:background="@drawable/box_grey"
                 android:textColor="@color/black"
-                android:layout_gravity="center|center_horizontal" />
+                android:gravity="center" />
 
             <TextView
                 android:id="@+id/tv_answers"
@@ -92,7 +90,7 @@
                 android:textSize="10sp"
                 android:background="@drawable/box_grey"
                 android:textColor="@color/black"
-                android:layout_gravity="center|center_horizontal" />
+                android:gravity="center" />
 
             <TextView
                 android:id="@+id/tv_score"
@@ -101,7 +99,7 @@
                 android:background="@drawable/box_grey"
                 android:textColor="@color/black"
                 android:layout_marginRight="5dp"
-                android:layout_gravity="center|center_horizontal" />
+                android:gravity="center" />
 
         </TableRow>
 

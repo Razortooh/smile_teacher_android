@@ -20,8 +20,10 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.smilec.smile.bu.Constants;
+import org.smilec.smile.domain.CurrentMessageStatus;
 import org.smilec.smile.domain.Question;
 import org.smilec.smile.domain.Student;
+import org.smilec.smile.ui.GeneralActivity;
 
 public class AnswersAndRatingsJSONParser {
 
@@ -34,10 +36,11 @@ public class AnswersAndRatingsJSONParser {
         String ip = object.optString(Constants.IP);
 
         Student student = students.get(ip);
-        if (student != null) {
-            student.setSolved(true);
-        }
 
+//        if (student != null) {
+//            student.setSolved(true);
+//        }
+        
         JSONArray answersArray = object.optJSONArray(ANSWERS);
         JSONArray ratingsArray = object.optJSONArray(RATINGS);
 
@@ -66,6 +69,13 @@ public class AnswersAndRatingsJSONParser {
                 question.addAnswer(answer);
                 student.addAnswer(question, answer);
 
+            }
+
+            // Retake scenario
+            if (!student.getAnswers().isEmpty()) {
+                student.setSolved(true);
+            } else {
+            	student.setSolved(false);
             }
         }
 

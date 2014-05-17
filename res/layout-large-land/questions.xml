@@ -6,23 +6,22 @@
   	android:layout_marginRight="5dip">
 
     <View
-  		android:id="@+id/view_separator1"
+  		android:id="@+id/red_line"
 		android:layout_width="70dip"
 		android:layout_height="3dip"
 		android:layout_alignParentRight="true"
         android:layout_marginRight="10dip"
-        android:layout_marginTop="10dip"
 		android:background="#FFFF0000"/>
 
-    <View
-  		android:id="@+id/view_separator2"
-		android:layout_width="fill_parent"
-		android:layout_height="2dip"
-		android:background="@color/black"
-		android:layout_marginLeft="10dip"
-        android:layout_marginRight="10dip"
-		android:layout_marginTop="3dip"
-		android:layout_below="@id/view_separator1"/>
+<!--     <View -->
+<!--   		android:id="@+id/view_separator2" -->
+<!-- 		android:layout_width="fill_parent" -->
+<!-- 		android:layout_height="2dip" -->
+<!-- 		android:background="@color/black" -->
+<!-- 		android:layout_marginLeft="10dip" -->
+<!--         android:layout_marginRight="10dip" -->
+<!-- 		android:layout_marginTop="3dip" -->
+<!-- 		android:layout_below="@id/view_separator1"/> -->
 
   	<TextView
   	  	android:id="@+id/tv_status"
@@ -30,12 +29,13 @@
    		android:layout_height="wrap_content"
       	android:text="@string/question_status"
       	android:textStyle="bold"
-      	android:textSize="12sp"
-      	android:textColor="@color/black"
-      	android:layout_marginTop="10dip"
-      	android:layout_below="@id/view_separator1"
+      	android:textSize="14sp"
+      	android:textColor="@color/white"
+      	android:background="@drawable/box_black"
+      	android:layout_below="@id/red_line"
       	android:layout_centerHorizontal="true"/>
-
+<!-- android:layout_marginTop="2dip" -->
+  	
   	<Button
   		android:id="@+id/bt_save"
   		android:layout_width="100dip"
@@ -67,7 +67,7 @@
 			android:layout_marginRight="10dip"/>
 
 	  	<TableRow
-	  		android:id="@+id/tr_row">
+	  		android:id="@+id/tr_row" >
 
 	  	    <TextView
 		  	  	android:id="@+id/tv_check"
@@ -76,8 +76,9 @@
 	            android:layout_weight="1"
 		        android:gravity="center"
 		      	android:text="@string/save"
-		      	android:textSize="12sp"
-		      	android:textColor="@color/black"/>
+		      	android:textSize="14sp"
+		      	android:textColor="@color/black"
+		      	android:background="@drawable/box_grey" />
 
 	  	    <TextView
 		  	  	android:id="@+id/tv_details"
@@ -86,34 +87,68 @@
 	            android:layout_weight="1"
 		        android:gravity="center"
 		      	android:text="@string/details"
-		      	android:textSize="12sp"
-		      	android:textColor="@color/black"/>
+		      	android:textSize="14sp"
+		      	android:textColor="@color/black"
+		      	android:background="@drawable/box_grey" />
 
-	  	    <TextView
-		      	android:id="@+id/tv_space1"
-		      	android:layout_width="0dip"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-		        android:gravity="center"
-		      	android:textColor="@color/black"/>
+<!-- 	  	    <TextView -->
+<!-- 		      	android:id="@+id/tv_space1" -->
+<!-- 		      	android:layout_width="0dip" -->
+<!-- 	            android:layout_height="wrap_content" -->
+<!-- 	            android:layout_weight="1" -->
+<!-- 		        android:gravity="center" -->
+<!-- 		      	android:textColor="@color/black"/> -->
 
+<!-- 		  	<TextView -->
+<!-- 		      	android:id="@+id/tv_question" -->
+<!-- 		      	android:layout_width="0dip" -->
+<!-- 	            android:layout_height="wrap_content" -->
+<!-- 	            android:layout_weight="1" -->
+<!-- 		        android:gravity="center" -->
+<!-- 		      	android:text="@string/number_owner_ip" -->
+<!-- 		      	android:textSize="12sp" -->
+<!-- 		      	android:textColor="@color/black"/> -->
+		  	
 		  	<TextView
-		      	android:id="@+id/tv_question"
+		      	android:id="@+id/tv_question_number"
 		      	android:layout_width="0dip"
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
 		        android:gravity="center"
-		      	android:text="@string/number_owner_ip"
-		      	android:textSize="12sp"
-		      	android:textColor="@color/black"/>
-
+		      	android:text="@string/number"
+		      	android:textSize="14sp"
+		      	android:textColor="@color/black"
+		      	android:background="@drawable/box_grey" />
+		  	
 		  	<TextView
-		      	android:id="@+id/tv_space2"
+		      	android:id="@+id/tv_question_owner"
 		      	android:layout_width="0dip"
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
 		        android:gravity="center"
-		      	android:textColor="@color/black"/>
+		      	android:text="@string/owner"
+		      	android:textSize="14sp"
+		      	android:textColor="@color/black"
+		      	android:background="@drawable/box_grey" />
+		  	
+		  	<TextView
+		      	android:id="@+id/tv_question_ip"
+		      	android:layout_width="0dip"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+		        android:gravity="center"
+		      	android:text="@string/ip"
+		      	android:textSize="14sp"
+		      	android:textColor="@color/black"
+		      	android:background="@drawable/box_grey" />
+
+<!-- 		  	<TextView -->
+<!-- 		      	android:id="@+id/tv_space2" -->
+<!-- 		      	android:layout_width="0dip" -->
+<!-- 	            android:layout_height="wrap_content" -->
+<!-- 	            android:layout_weight="1" -->
+<!-- 		        android:gravity="center" -->
+<!-- 		      	android:textColor="@color/black"/> -->
 
 		  	<TextView
 		    	android:id="@+id/tv_answers"
@@ -122,18 +157,19 @@
 	            android:layout_weight="1"
 		        android:gravity="center"
 		      	android:text="@string/correct"
-		      	android:textSize="12sp"
-		      	android:textColor="@color/black"/>
+		      	android:textSize="14sp"
+		      	android:textColor="@color/black"
+		      	android:background="@drawable/box_grey" />
 
 		  	<TextView
 		      	android:id="@+id/tv_score"
 		      	android:text="@string/rating"
-		      	android:textSize="12sp"
+		      	android:textSize="14sp"
 		      	android:textColor="@color/black"
-		      	android:lines="2"
-		        android:layout_gravity="center|center_horizontal"
-		        android:gravity="center"/>
-
+		      	android:lines="1"
+		        android:gravity="center"
+		        android:layout_marginRight="10dip"
+		        android:background="@drawable/box_grey" />
 	  	</TableRow>
 
 	  	<View

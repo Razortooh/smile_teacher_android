@@ -26,6 +26,7 @@ import org.smilec.smile.bu.Constants;
 import org.smilec.smile.bu.QuestionsManager;
 import org.smilec.smile.bu.SmilePlugServerManager;
 import org.smilec.smile.bu.exception.DataAccessException;
+import org.smilec.smile.domain.CurrentMessageStatus;
 import org.smilec.smile.domain.IQSet;
 import org.smilec.smile.domain.Question;
 import org.smilec.smile.domain.Results;
@@ -99,7 +100,7 @@ public class UsePreparedQuestionsActivity extends ListActivity {
         ip = this.getIntent().getStringExtra(GeneralActivity.PARAM_IP);
         results = (Results) this.getIntent().getSerializableExtra(GeneralActivity.PARAM_RESULTS);
         status = this.getIntent().getStringExtra(GeneralActivity.PARAM_STATUS);
-
+        
         btOk = (Button) findViewById(R.id.bt_ok);
         cbQuestions = (CheckBox) findViewById(R.id.cb_questions);
         spinnerHours = (Spinner) findViewById(R.id.sp_hours);
@@ -107,6 +108,11 @@ public class UsePreparedQuestionsActivity extends ListActivity {
         spinnerSeconds = (Spinner) findViewById(R.id.sp_seconds);
         btClose = (ImageButton) findViewById(R.id.bt_close);
 
+        // If retaking, we remove the cross
+        if(status.equals(CurrentMessageStatus.RE_TAKE.name())) {
+        	btClose.setVisibility(View.INVISIBLE);
+        }
+        
         lvListQuestions = getListView();
     }
 
@@ -166,7 +172,7 @@ public class UsePreparedQuestionsActivity extends ListActivity {
         @Override
         public void onClick(View v) {
             
-        	if (status != null && !status.equals("") && !status.equals("START_MAKE")) {
+        	if (status != null && !status.equals("") && !status.equals("START_MAKE") && !status.equals(CurrentMessageStatus.RE_TAKE.name())) {
                 	
                 	Log.d("SMILE Teacher", "Status = " + status);
                     
@@ -296,10 +302,11 @@ public class UsePreparedQuestionsActivity extends ListActivity {
         	
         	boolean iqsetsExist = false;
         	
-        	try 
-        		{iqsetsExist = new SmilePlugServerManager().iqsetsExist(ip, context); }
-        	catch (NetworkErrorException e) 
-        		{ e.printStackTrace(); }
+        	try {
+        		iqsetsExist = new SmilePlugServerManager().iqsetsExist(ip, context); 
+    		} catch (NetworkErrorException e) { 
+    			e.printStackTrace(); 
+			}
         	
             if (iqsetsExist) {
                 UsePreparedQuestionsActivity.this.loadIQSets();
@@ -354,17 +361,18 @@ public class UsePreparedQuestionsActivity extends ListActivity {
     }
     
     private void openGeneralActivity() {
-        Intent intent = new Intent(this, GeneralActivity.class);
-        intent.putExtra(GeneralActivity.PARAM_IP, ip);
-        intent.putExtra(GeneralActivity.PARAM_RESULTS, results);
-        intent.putExtra(GeneralActivity.PARAM_STATUS, status);
-        intent.putExtra(GeneralActivity.PARAM_HOURS, spinnerHours.getSelectedItem().toString());
-        intent.putExtra(GeneralActivity.PARAM_MINUTES, spinnerMinutes.getSelectedItem().toString());
-        intent.putExtra(GeneralActivity.PARAM_SECONDS, spinnerSeconds.getSelectedItem().toString());
-        startActivity(intent);
-
-        ActivityUtil.showLongToast(this, R.string.toast_starting);
-
+        
+    	if(!status.equals("RE_TAKE")) {
+    		Intent intent = new Intent(this, GeneralActivity.class);
+            intent.putExtra(GeneralActivity.PARAM_IP, ip);
+            intent.putExtra(GeneralActivity.PARAM_RESULTS, results);
+            intent.putExtra(GeneralActivity.PARAM_STATUS, status);
+            intent.putExtra(GeneralActivity.PARAM_HOURS, spinnerHours.getSelectedItem().toString());
+            intent.putExtra(GeneralActivity.PARAM_MINUTES, spinnerMinutes.getSelectedItem().toString());
+            intent.putExtra(GeneralActivity.PARAM_SECONDS, spinnerSeconds.getSelectedItem().toString());
+            startActivity(intent);
+    	}
+		ActivityUtil.showLongToast(this, R.string.toast_starting);
         this.finish();
     }
 }

@@ -106,7 +106,7 @@
   		android:textSize="12sp"
   		android:textStyle="bold"
   		android:layout_marginLeft="10dip"
-  		android:layout_marginTop="10dip"
+  		android:layout_marginTop="5dip"
   		android:layout_alignParentLeft="true"
   		android:layout_below="@id/ll_buttons"/>
 
@@ -120,7 +120,7 @@
   		android:textStyle="bold"
   		android:layout_centerHorizontal="true"
   		android:layout_marginRight="10dip"
-  		android:layout_marginTop="10dip"
+  		android:layout_marginTop="5dip"
   		android:layout_alignParentRight="true"
   		android:layout_below="@id/ll_buttons"/>
 
@@ -130,7 +130,7 @@
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical"
 	    android:layout_below="@id/tv_students"
-	    android:layout_marginTop="5dip">
+	    android:layout_marginTop="2dip">
 
 		<android.support.v4.view.ViewPager
 		    android:id="@+id/vp_awesomepager"

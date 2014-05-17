@@ -20,7 +20,8 @@ public enum CurrentMessageStatus {
     WAIT_CONNECT("Wait connect"),
     START_MAKE("Make Questions"),
     START_SOLVE("Solve Questions"),
-    START_SHOW("Show Results");
+    START_SHOW("Show Results"),
+    RE_TAKE("Retake iqset");
 
     private String status;
 

@@ -24,7 +24,7 @@ public class SmilePlugUtil {
 
     public static final String START_MAKING_QUESTIONS_URL = "startmakequestion";
     public static final String START_SOLVING_QUESTIONS_URL = "startsolvequestion";
-    public static final String RETAKE_QUESTIONS_URL = "junctionserverexecution/pushmsg.php";
+    public static final String RETAKE_QUESTIONS_URL = "JunctionServerExecution/pushmsg.php";
  // public static final String RETAKE_QUESTIONS_URL = "junctionserverexecution/current/MSG/smsg.txt";
 
     public static final String SHOW_RESULTS_URL = "sendshowresults";

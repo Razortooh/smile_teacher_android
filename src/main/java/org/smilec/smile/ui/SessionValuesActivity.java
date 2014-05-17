@@ -127,8 +127,6 @@ public class SessionValuesActivity extends Activity {
         intent.putExtra(GeneralActivity.PARAM_IP, ip_smileplug);
         intent.putExtra(GeneralActivity.PARAM_STATUS, status);
         
-//        ActivityUtil.showLongToast(this, R.string.connection_established);
-        
         // Display toast through the handler
     	Message msg = null;
 		msg = mHandler.obtainMessage(MSG_OK, getResources().getString(R.string.toast_creating_session));
@@ -139,7 +137,6 @@ public class SessionValuesActivity extends Activity {
         
         // Closing SessionValuesActivity
         this.setVisible(false);
-//      this.finish();
     }
     
 	// To manage messages outside onCreate() method

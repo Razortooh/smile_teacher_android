@@ -165,6 +165,27 @@ public class SmilePlugServerManager extends AbstractBaseManager {
     }
     
     /**
+     * Ask to the server if a session is already running
+     */
+    public boolean isAlreadyRunningSession(String ip) throws NetworkErrorException {
+    	
+    	boolean bool = false;
+    	String url = SmilePlugUtil.createUrl(ip, SmilePlugUtil.ALL_DATA_URL);
+    	InputStream is = HttpUtil.executeGet(url);
+    	
+    	try {
+    		String smileAll = IOUtil.loadContent(is, "UTF-8");
+    		bool = smileAll.contains("SessionID");
+		} catch (IOException e) { 
+			e.printStackTrace();
+		} finally { 
+			IOUtil.silentClose(is);
+        }
+    			
+    	return bool;
+    }
+    
+    /**
      * Send the session metadata (teacher name, session name, and group name) to smileplug server
      */
     public void createSession(String ip, String teacherName, String sessionTitle, String groupName, Context context) throws NetworkErrorException {
@@ -286,9 +307,7 @@ public class SmilePlugServerManager extends AbstractBaseManager {
         } finally {
             IOUtil.silentClose(is);
         }
-
         return null;
-
     }
 
     public void startSolvingQuestions(String ip, Context context) throws NetworkErrorException {
@@ -298,30 +317,26 @@ public class SmilePlugServerManager extends AbstractBaseManager {
     }
 
     public void startRetakeQuestions(String ip, Context context, Board board) throws NetworkErrorException {
-        String url = "http://" + ip + "/" + SmilePlugUtil.RETAKE_QUESTIONS_URL;
+        
+    	String url = "http://" + ip + "/" + SmilePlugUtil.RETAKE_QUESTIONS_URL;
 
+		int questionsNumber = board.getQuestionsNumber();
+		Collection<Question> questions = board.getQuestions();
+		List<Integer> answersList = new ArrayList<Integer>();
+		
         try {
-	        JSONObject retakeJson = new JSONObject();
-			int questionsNumber = board.getQuestionsNumber();
-			Collection<Question> questions = board.getQuestions();
-			List<Integer> answersList = new ArrayList<Integer>();
-			for (Iterator<Question> iterator = questions.iterator(); iterator.hasNext();) {
+        	for (Iterator<Question> iterator = questions.iterator(); iterator.hasNext();) {
 				Question question = (Question) iterator.next();
 				answersList.add(question.getAnswer());
 			}
 			JSONArray answers = new JSONArray(answersList);
-
-		    retakeJson.put("TIME_LIMIT", 10);
-			retakeJson.put("NUMQ", questionsNumber);
-			retakeJson.put("RANSWER", answers);
-
-			post(ip, context, url, retakeJson.toString());
-
-        } catch (JSONException e) {
-        	new SendEmailAsyncTask(e.getMessage(),JSONException.class.getName(),SmilePlugServerManager.class.getName()).execute();
-	    	e.printStackTrace();
-	    }
-
+			
+			post(ip, context, url, "{TYPE:'RE_TAKE',RANSWER:"+answers.toString()+",TIME_LIMIT:'"+10+"',NUMQ:'"+questionsNumber+"'}");
+			
+	    } catch (Exception e) {
+			Log.e("SMILE_TEACHER:SmilePlugServerManager", "ERROR, reason: " + e.getMessage());
+			e.printStackTrace();
+		}
     }
 
     public void showResults(String ip, Context context) throws NetworkErrorException {
