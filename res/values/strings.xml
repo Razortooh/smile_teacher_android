@@ -42,7 +42,7 @@
 	<string name="no_picture">No picture</string>
 
 	<string name="start_making">Start Making Questions</string>
-	<string name="recovering_session">Recovering Session</string>
+	<string name="recover_session">Recover Session</string>
 	<string name="use_prepared">Use Prepared Questions</string>
 	<string name="start_solving">Start Solving \n Questions</string>
 	<string name="show_results">Finish:\nShow Results</string>
