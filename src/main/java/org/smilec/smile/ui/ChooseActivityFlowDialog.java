@@ -101,7 +101,7 @@ public class ChooseActivityFlowDialog extends Activity {
         	btUse.setEnabled(false);
         	btUse.setBackgroundResource(R.drawable.button_grey);
         	btStart.setBackgroundResource(R.drawable.button_orange);
-        	btStart.setText(R.string.recovering_session);
+        	btStart.setText(R.string.recover_session);
         } else {
         	btUse.setEnabled(true);
         	btUse.setBackgroundResource(R.drawable.button_blue);
