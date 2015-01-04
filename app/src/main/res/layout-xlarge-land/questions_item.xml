@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.smilec.smile.ui.widget.checkbox.CheckableRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:marvinlabs="http://schemas.android.com/apk/res/fr.marvinlabs.selectablelisttutorial"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:shrinkColumns="*"
+    android:stretchColumns="*"
+    android:background="@color/white">
+
+    <TableRow
+        android:id="@+id/tr"
+	    android:paddingTop="5dip"
+	    android:paddingBottom="5dip">
+
+		<org.smilec.smile.ui.widget.checkbox.InertCheckBox
+	        android:id="@+id/cb_item_checkbox"
+	        android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center|center_vertical"
+	        android:button="@drawable/checkbox"
+	        android:focusable="false"
+	        android:textSize="18sp"
+	        android:src="@color/white"
+			android:checked="true" />
+
+	    <Button
+	        android:id="@+id/iv_details"
+	        android:layout_width="0dip"
+            android:layout_height="50dip"
+            android:layout_weight="1"
+	        android:gravity="center"
+	        android:layout_gravity="center_vertical"
+	        android:background="@drawable/rounded_border_button"
+	        android:textSize="18sp"
+	        android:textColor="@color/black"
+	        android:text="@string/detail"
+	        android:focusable="false"
+	        android:focusableInTouchMode="false"/>
+
+	    <TextView
+	        android:id="@+id/tv_number"
+	        android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+	        android:gravity="center"
+	        android:layout_gravity="center"
+	        android:textSize="18sp"
+	        android:textColor="@color/black"
+	        android:background="@color/white"/>
+
+	    <TextView
+	        android:id="@+id/tv_owner"
+	        android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+	        android:gravity="center"
+	        android:layout_gravity="center"
+	        android:textSize="18sp"
+	        android:textColor="@color/black"
+	        android:background="@color/white"/>
+
+	    <TextView
+	        android:id="@+id/tv_ip"
+	        android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+	        android:gravity="center"
+	        android:layout_gravity="center"
+	        android:textSize="18sp"
+	        android:textColor="@color/black"
+	        android:background="@color/white"/>
+
+	    <TextView
+	        android:id="@+id/tv_hit_average"
+	        android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+	        android:gravity="center"
+	        android:layout_gravity="center"
+	        android:textSize="18sp"
+	        android:textColor="@color/black"
+	        android:background="@color/white"/>
+
+	    <RatingBar
+	        android:id="@+id/rb_ratingbar"
+	        android:layout_width="0dip"
+            android:layout_height="wrap_content"
+	        android:layout_gravity="center|center_vertical"
+	        android:gravity="center_horizontal"
+	        style="?android:attr/ratingBarStyleSmall"
+	        android:numStars="5"
+	        android:background="@color/white"/>
+
+    </TableRow>
+
+</org.smilec.smile.ui.widget.checkbox.CheckableRelativeLayout>

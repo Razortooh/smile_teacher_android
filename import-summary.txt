@@ -1,0 +1,76 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* .gitignore
+* LICENSE
+* NOTICE
+* Readme.md
+* src\
+* src\main\
+* src\main\resources\
+* src\main\resources\.gitignore
+* src\test\
+* src\test\resources\
+* src\test\resources\android.jpg
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+gson-1.7.1.jar => com.google.code.gson:gson:1.7.1
+
+Potentially Missing Dependency:
+-------------------------------
+When we replaced the following .jar files with a Gradle dependency, we
+inferred the dependency version number from the filename. This
+specific version may not actually be available from the repository.
+If you get a build error stating that the dependency is missing, edit
+the version number to for example "+" to pick up the latest version
+instead. (This may require you to update your code if the library APIs
+have changed.)
+
+gson-1.7.1.jar => version 1.7.1 in com.google.code.gson:gson:1.7.1
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => app\src\main\AndroidManifest.xml
+* libs\activation-1.1.1.jar => app\libs\activation-1.1.1.jar
+* libs\base64-2.3.7.jar => app\libs\base64-2.3.7.jar
+* libs\commons-lang-2.6.jar => app\libs\commons-lang-2.6.jar
+* libs\compatibility-v4-r3.jar => app\libs\compatibility-v4-r3.jar
+* libs\javacsv.jar => app\libs\javacsv.jar
+* libs\javax.mail-1.5.0.jar => app\libs\javax.mail-1.5.0.jar
+* libs\junit-4.8.2.jar => app\libs\junit-4.8.2.jar
+* res\ => app\src\main\res\
+* src\main\java\ => app\src\main\java\
+* src\test\java\ => app\src\main\java\
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+  	android:layout_width="fill_parent"
+  	android:layout_height="fill_parent"
+  	android:background="@drawable/rounded_border"
+  	android:layout_gravity="center"
+  	android:layout_margin="10dip">
+
+  	<TextView
+	  	android:id="@+id/tv_title"
+	  	android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textColor="@color/black"
+		android:textSize="12sp"
+		android:textStyle="bold"
+		android:layout_alignBottom="@+id/bt_close"
+		android:layout_centerHorizontal="true"/>
+  	
+  	<ImageButton 
+        android:id="@+id/bt_close"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/btn_close"
+        android:contentDescription="@string/close_dialog"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp" />
+
+	<View
+		android:id="@+id/view_separator"
+		android:layout_width="fill_parent"
+		android:layout_height="1dip"
+		android:background="@color/gray"
+		android:layout_marginLeft="5dip"
+		android:layout_marginRight="5dip"
+		android:layout_below="@+id/bt_close"/>
+	
+	<TextView
+	    android:id="@+id/tv_select_item"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/select"
+	    android:textColor="@color/black"
+	    android:textSize="12sp"
+	    android:layout_marginTop="3dip"
+		android:layout_marginLeft="10dip"
+	    android:layout_alignParentLeft="true"
+		android:layout_below="@+id/view_separator"  />
+
+	<View
+		android:id="@+id/view_separator_bottom"
+		android:layout_width="fill_parent"
+		android:layout_height="1dip"
+		android:background="@color/gray"
+		android:layout_marginLeft="5dip"
+		android:layout_marginRight="5dip"
+		android:layout_marginBottom="8dip"
+		android:layout_marginTop="4dip"
+		android:layout_alignParentBottom="true"/>
+
+	<ListView
+	    android:id="@+id/android:list"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_above="@+id/bt_ok"
+	    android:layout_alignParentLeft="true"
+	    android:layout_below="@+id/tv_select_item"
+	    android:layout_marginTop="5dip"
+	    android:layout_marginBottom="15dip"
+	    android:layout_marginLeft="10dip"
+	    android:layout_marginRight="10dip"
+	    android:choiceMode="singleChoice"
+	    android:divider="@android:color/transparent" />
+	
+	<CheckBox
+	    android:id="@+id/cb_questions"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/countdown"
+	    android:textColor="@color/black"
+	    android:textSize="10sp"
+	    android:layout_marginLeft="5dip"
+	    android:layout_marginRight="10dip"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignBaseline="@+id/sp_hours" />
+	
+	<TextView
+	    android:id="@+id/tv_hours_spinner"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/hours"
+	    android:textSize="10sp"
+	    android:layout_toRightOf="@+id/cb_questions"
+	    android:layout_marginLeft="10sp"
+	    android:layout_above="@+id/sp_hours"
+	    android:textColor="@color/black" />
+	
+	<Spinner
+	    android:id="@+id/sp_hours"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/view_separator_bottom"
+	    android:layout_alignTop="@+id/bt_ok"
+	    android:layout_marginRight="5dp"
+	    android:layout_toRightOf="@+id/cb_questions"
+	    android:prompt="@string/hours" />
+	
+	<TextView
+	    android:id="@+id/tv_minutes_spinner"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/minutes"
+	    android:textSize="10sp"
+	    android:textColor="@color/black"
+	    android:layout_toRightOf="@+id/sp_hours"
+	    android:layout_marginLeft="10sp"
+	    android:layout_above="@+id/sp_minutes" />
+	
+	<Spinner
+	    android:id="@+id/sp_minutes"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:prompt="@string/minutes"
+	    android:layout_toRightOf="@+id/sp_hours"
+	    android:layout_above="@+id/view_separator_bottom"
+	    android:layout_alignTop="@+id/bt_ok"
+	    android:layout_marginRight="5dp" />
+
+	<TextView
+	    android:id="@+id/tv_seconds_spinner"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/seconds"
+	    android:textSize="10sp"
+	    android:layout_above="@+id/sp_seconds"
+	    android:textColor="@color/black"
+	    android:layout_toRightOf="@+id/sp_minutes"
+	    android:layout_marginLeft="10sp" />
+	
+	<Spinner
+	    android:id="@+id/sp_seconds"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:prompt="@string/seconds"
+	    android:layout_above="@+id/view_separator_bottom"
+	    android:layout_alignTop="@+id/bt_ok"
+	    android:layout_toRightOf="@+id/sp_minutes" />
+
+	<Button
+	    android:id="@+id/bt_ok"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/view_separator_bottom"
+	    android:layout_marginRight="15dp"
+	    android:layout_alignParentRight="true"
+	    android:textColor="@color/white"
+	    android:background="@drawable/button_green"
+	    android:text="@string/load"
+	    android:textSize="18sp" />
+
+</RelativeLayout>

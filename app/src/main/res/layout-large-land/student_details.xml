@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/container"
+  	android:layout_width="fill_parent"
+  	android:layout_height="fill_parent"
+  	android:background="@drawable/rounded_border"
+  	android:layout_gravity="center"
+  	android:layout_marginTop="30dip"
+  	android:layout_marginBottom="30dip"
+  	android:layout_marginLeft="100dip"
+  	android:layout_marginRight="100dip">
+  	
+    <ImageButton 
+        android:id="@+id/bt_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_close"
+        android:contentDescription="@string/close_dialog"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+  	  	android:id="@+id/tv_title"
+  	  	android:layout_width="wrap_content"
+   		android:layout_height="wrap_content"
+   		android:layout_marginBottom="15dip"
+   		android:text="@string/score_board"
+   		android:layout_centerHorizontal="true"
+      	android:textStyle="bold"
+      	android:textSize="18sp"
+      	android:textColor="@color/black"
+      	android:layout_above="@+id/view_separator" />
+    
+    <View
+		android:id="@+id/view_separator"
+		android:layout_below="@+id/bt_close"
+		android:layout_width="fill_parent"
+		android:layout_height="1dip"
+		android:layout_marginLeft="4dp"
+		android:layout_marginRight="4dp"
+		android:background="@color/gray" />
+    
+    <TextView
+  	  	android:id="@+id/tv_name"
+  	  	android:layout_width="wrap_content"
+   		android:layout_height="wrap_content"
+   		android:layout_marginTop="15dip"
+   		android:layout_toLeftOf="@+id/tv_title"
+   		android:layout_below="@+id/tv_title"
+      	android:textStyle="bold"
+      	android:textSize="18sp"
+      	android:textColor="@color/black" />
+
+    <TextView
+  	  	android:id="@+id/tv_score"
+  	  	android:layout_width="wrap_content"
+   		android:layout_height="wrap_content"
+   		android:layout_marginTop="15dip"
+   		android:layout_toRightOf="@+id/tv_title"
+   		android:layout_below="@+id/tv_title"
+      	android:textStyle="bold"
+      	android:textSize="18sp"
+      	android:textColor="@color/black" />
+    
+    <LinearLayout
+	  	android:layout_width="fill_parent"
+	  	android:layout_height="fill_parent"
+	  	android:layout_below="@+id/tv_name"
+	  	android:layout_marginTop="10dip"
+	  	android:orientation="horizontal">
+
+        <TableLayout
+		  	android:id="@+id/tl_status"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="fill_parent"
+		  	android:shrinkColumns="*"
+	    	android:stretchColumns="*"
+	    	android:layout_margin="5dip">
+
+<!-- 	    	<View -->
+<!-- 				android:id="@+id/view_separator2" -->
+<!-- 				android:layout_width="fill_parent" -->
+<!-- 				android:layout_height="1dip" -->
+<!-- 				android:background="@color/gray" /> -->
+
+		  	<TableRow
+		  		android:id="@+id/tr_row"
+		  		android:background="@drawable/box_grey"
+		  		android:layout_width="wrap_content"
+		   	  	android:layout_height="wrap_content"
+		   	  	android:paddingLeft="40dp" >
+
+			  	<TextView
+			  	  	android:id="@+id/tv_title_number"
+			  	  	android:layout_width="20dip"
+		  			android:layout_height="wrap_content"
+			      	android:text="@string/question_number"
+			      	android:textSize="18sp"
+			      	android:textColor="@color/black"
+			      	android:gravity="center"/>
+
+			  	<TextView
+			      	android:id="@+id/tv_title_correct"
+			      	android:layout_width="20dip"
+		  			android:layout_height="wrap_content"
+			      	android:text="@string/correct_answer"
+			      	android:textSize="18sp"
+			      	android:textColor="@color/black"
+			      	android:gravity="center"/>
+
+			  	<TextView
+			    	android:id="@+id/tv_title_chosen"
+			    	android:layout_width="20dip"
+		  			android:layout_height="wrap_content"
+			      	android:text="@string/chosen_answer"
+			      	android:textSize="18sp"
+			      	android:textColor="@color/black"
+			      	android:gravity="center"/>
+
+			  	<TextView
+			      	android:id="@+id/tv_title_rating"
+			      	android:layout_width="10dip"
+		  			android:layout_height="wrap_content"
+			      	android:text="@string/give_rating"
+			      	android:textColor="@color/black"
+			      	android:textSize="18sp"
+			      	android:gravity="center"
+			      	android:paddingRight="50dip"/>
+
+		  	</TableRow>
+
+		  	<View
+				android:id="@+id/view_separator3"
+				android:layout_width="fill_parent"
+				android:layout_height="1dip"
+				android:background="@color/gray" />
+
+		  	<ListView
+				android:id="@+id/list"
+			    android:layout_width="wrap_content"
+			  	android:layout_height="fill_parent"
+			  	android:layout_marginBottom="10dip"/>
+
+		</TableLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
+

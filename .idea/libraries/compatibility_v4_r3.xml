@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="compatibility-v4-r3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/compatibility-v4-r3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
